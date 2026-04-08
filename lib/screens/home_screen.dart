@@ -56,7 +56,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         filterTitle = 'Valid Documents';
         break;
       case DocumentStatus.expiringSoon:
-        displayedDocuments = documentsByStatus[DocumentStatus.expiringSoon] ?? [];
+        displayedDocuments =
+            documentsByStatus[DocumentStatus.expiringSoon] ?? [];
         filterTitle = 'Expiring Soon';
         break;
       case DocumentStatus.expired:
@@ -118,7 +119,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   filled: true,
                   fillColor: isDarkMode ? Colors.grey[900] : Colors.grey[50],
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
               ),
             ),
@@ -142,7 +146,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(width: 8),
                     _buildFilterChip(
                       label: 'Valid',
-                      count: documentsByStatus[DocumentStatus.valid]?.length ?? 0,
+                      count:
+                          documentsByStatus[DocumentStatus.valid]?.length ?? 0,
                       isSelected: _selectedStatus == DocumentStatus.valid,
                       onTap: () {
                         setState(() => _selectedStatus = DocumentStatus.valid);
@@ -153,10 +158,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(width: 8),
                     _buildFilterChip(
                       label: 'Expiring Soon',
-                      count: documentsByStatus[DocumentStatus.expiringSoon]?.length ?? 0,
-                      isSelected: _selectedStatus == DocumentStatus.expiringSoon,
+                      count:
+                          documentsByStatus[DocumentStatus.expiringSoon]
+                              ?.length ??
+                          0,
+                      isSelected:
+                          _selectedStatus == DocumentStatus.expiringSoon,
                       onTap: () {
-                        setState(() => _selectedStatus = DocumentStatus.expiringSoon);
+                        setState(
+                          () => _selectedStatus = DocumentStatus.expiringSoon,
+                        );
                       },
                       isDarkMode: isDarkMode,
                       color: Colors.orange,
@@ -164,10 +175,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(width: 8),
                     _buildFilterChip(
                       label: 'Expired',
-                      count: documentsByStatus[DocumentStatus.expired]?.length ?? 0,
+                      count:
+                          documentsByStatus[DocumentStatus.expired]?.length ??
+                          0,
                       isSelected: _selectedStatus == DocumentStatus.expired,
                       onTap: () {
-                        setState(() => _selectedStatus = DocumentStatus.expired);
+                        setState(
+                          () => _selectedStatus = DocumentStatus.expired,
+                        );
                       },
                       isDarkMode: isDarkMode,
                       color: Colors.red,
@@ -180,7 +195,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
             // Document List
             Expanded(
-              child: _buildDocumentList(displayedDocuments, filterTitle, isDarkMode),
+              child: _buildDocumentList(
+                displayedDocuments,
+                filterTitle,
+                isDarkMode,
+              ),
             ),
           ],
         ),
@@ -188,9 +207,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onPressed: () {
             _dismissKeyboard();
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const AddEditScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => const AddEditScreen()),
             );
           },
           icon: const Icon(Icons.add),
@@ -255,7 +272,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildDocumentList(List<dynamic> documents, String title, bool isDarkMode) {
+  Widget _buildDocumentList(
+    List<dynamic> documents,
+    String title,
+    bool isDarkMode,
+  ) {
     if (documents.isEmpty) {
       return EmptyState(
         title: 'No $title',
@@ -284,7 +305,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text('Document deleted'),
-                backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[700],
+                backgroundColor: isDarkMode
+                    ? Colors.grey[800]
+                    : Colors.grey[700],
                 action: SnackBarAction(
                   label: 'Undo',
                   onPressed: () {

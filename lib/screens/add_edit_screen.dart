@@ -39,13 +39,14 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
     );
 
     _selectedDate =
-        widget.document?.expiryDate ?? DateTime.now().add(const Duration(days: 1));
+        widget.document?.expiryDate ??
+        DateTime.now().add(const Duration(days: 1));
 
     _reminderTime = widget.document != null
         ? TimeOfDay(
-      hour: widget.document!.reminderHour,
-      minute: widget.document!.reminderMinute,
-    )
+            hour: widget.document!.reminderHour,
+            minute: widget.document!.reminderMinute,
+          )
         : const TimeOfDay(hour: 9, minute: 0);
 
     _reminderEnabled = widget.document?.reminderEnabled ?? true;
@@ -60,10 +61,12 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
     // ✅ Call async method separately
     _loadFilePath();
   }
+
   Future<void> _loadFilePath() async {
     if (widget.document?.filePath != null) {
-      final fullPath =
-      await _fileService.getFullPath(widget.document!.filePath);
+      final fullPath = await _fileService.getFullPath(
+        widget.document!.filePath,
+      );
 
       if (mounted) {
         setState(() {
@@ -82,11 +85,11 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
   Future<void> _pickFile() async {
     try {
       if (!mounted) return;
-      
+
       FocusScope.of(context).unfocus();
-      
+
       final filePath = await _fileService.pickFile();
-      
+
       if (mounted && filePath != null) {
         setState(() {
           _selectedFilePath = filePath;
@@ -103,9 +106,9 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
   Future<void> _captureFromCamera() async {
     try {
       if (!mounted) return;
-      
+
       final filePath = await _fileService.openCamera();
-      
+
       if (mounted && filePath != null) {
         setState(() {
           _selectedFilePath = filePath;
@@ -113,7 +116,9 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
         });
       } else if (mounted && filePath == null) {
         // Permission was denied, show message
-        _showErrorSnackBar('Camera permission denied. Please enable it in settings.');
+        _showErrorSnackBar(
+          'Camera permission denied. Please enable it in settings.',
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -125,9 +130,9 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
   Future<void> _pickFromGallery() async {
     try {
       if (!mounted) return;
-      
+
       final filePath = await _fileService.pickFromGallery();
-      
+
       if (mounted && filePath != null) {
         setState(() {
           _selectedFilePath = filePath;
@@ -135,7 +140,9 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
         });
       } else if (mounted && filePath == null) {
         // Permission was denied, show message
-        _showErrorSnackBar('Photo permission denied. Please enable it in settings.');
+        _showErrorSnackBar(
+          'Photo permission denied. Please enable it in settings.',
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -146,7 +153,7 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
 
   void _showSourceOptions() {
     FocusScope.of(context).unfocus();
-    
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -251,7 +258,7 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
   Future<void> _selectDate() async {
     // Dismiss keyboard before opening date picker
     FocusScope.of(context).unfocus();
-    
+
     final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
@@ -268,7 +275,7 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
   Future<void> _selectTime() async {
     // Dismiss keyboard before opening time picker
     FocusScope.of(context).unfocus();
-    
+
     final picked = await showTimePicker(
       context: context,
       initialTime: _reminderTime,
@@ -341,10 +348,10 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
       if (mounted) {
         // Dismiss keyboard and navigate
         FocusScope.of(context).unfocus();
-        
+
         // Use a small delay to ensure keyboard is dismissed before navigation
         await Future.delayed(const Duration(milliseconds: 100));
-        
+
         if (mounted) {
           Navigator.of(context).pop();
           _showSuccessSnackBar(
@@ -404,7 +411,9 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
           appBar: AppBar(
-            title: Text(widget.document == null ? 'Add Document' : 'Edit Document'),
+            title: Text(
+              widget.document == null ? 'Add Document' : 'Edit Document',
+            ),
             elevation: 0,
           ),
           body: SingleChildScrollView(
@@ -435,7 +444,9 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+                        color: isDarkMode
+                            ? Colors.grey[700]!
+                            : Colors.grey[300]!,
                       ),
                       borderRadius: BorderRadius.circular(12),
                       color: isDarkMode ? Colors.grey[900] : Colors.grey[50],
@@ -448,7 +459,10 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                             color: Colors.blue.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.attach_file, color: Colors.blue),
+                          child: const Icon(
+                            Icons.attach_file,
+                            color: Colors.blue,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -463,8 +477,12 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                   color: _selectedFileName != null
-                                      ? (isDarkMode ? Colors.white : Colors.black)
-                                      : (isDarkMode ? Colors.grey[400] : Colors.grey[600]),
+                                      ? (isDarkMode
+                                            ? Colors.white
+                                            : Colors.black)
+                                      : (isDarkMode
+                                            ? Colors.grey[400]
+                                            : Colors.grey[600]),
                                 ),
                               ),
                               if (_selectedFileName != null)
@@ -472,13 +490,19 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                                   'PDF, JPG, PNG, DOC, DOCX',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: isDarkMode ? Colors.grey[500] : Colors.grey[500],
+                                    color: isDarkMode
+                                        ? Colors.grey[500]
+                                        : Colors.grey[500],
                                   ),
                                 ),
                             ],
                           ),
                         ),
-                        Icon(Icons.arrow_forward_ios, size: 16, color: isDarkMode ? Colors.grey[600] : Colors.grey),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: isDarkMode ? Colors.grey[600] : Colors.grey,
+                        ),
                       ],
                     ),
                   ),
@@ -506,7 +530,9 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+                        color: isDarkMode
+                            ? Colors.grey[700]!
+                            : Colors.grey[300]!,
                       ),
                       borderRadius: BorderRadius.circular(12),
                       color: isDarkMode ? Colors.grey[900] : Colors.grey[50],
@@ -519,7 +545,10 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                             color: Colors.orange.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.calendar_today, color: Colors.orange),
+                          child: const Icon(
+                            Icons.calendar_today,
+                            color: Colors.orange,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -530,7 +559,9 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                                 'Expiry Date',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: isDarkMode ? Colors.grey[400] : Colors.grey,
+                                  color: isDarkMode
+                                      ? Colors.grey[400]
+                                      : Colors.grey,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -544,7 +575,11 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                             ],
                           ),
                         ),
-                        Icon(Icons.arrow_forward_ios, size: 16, color: isDarkMode ? Colors.grey[600] : Colors.grey),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: isDarkMode ? Colors.grey[600] : Colors.grey,
+                        ),
                       ],
                     ),
                   ),
@@ -555,7 +590,10 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                 _buildSectionTitle('Reminders', isDarkMode),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
@@ -574,7 +612,10 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                               color: Colors.green.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.notifications, color: Colors.green),
+                            child: const Icon(
+                              Icons.notifications,
+                              color: Colors.green,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           const Text(
@@ -605,13 +646,20 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                       _buildSectionTitle('Remind me before', isDarkMode),
                       const SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+                            color: isDarkMode
+                                ? Colors.grey[700]!
+                                : Colors.grey[300]!,
                           ),
                           borderRadius: BorderRadius.circular(12),
-                          color: isDarkMode ? Colors.grey[900] : Colors.grey[50],
+                          color: isDarkMode
+                              ? Colors.grey[900]
+                              : Colors.grey[50],
                         ),
                         child: ReminderOffsetDropdown(
                           selectedOffset: _selectedOffset,
@@ -631,10 +679,14 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+                              color: isDarkMode
+                                  ? Colors.grey[700]!
+                                  : Colors.grey[300]!,
                             ),
                             borderRadius: BorderRadius.circular(12),
-                            color: isDarkMode ? Colors.grey[900] : Colors.grey[50],
+                            color: isDarkMode
+                                ? Colors.grey[900]
+                                : Colors.grey[50],
                           ),
                           child: Row(
                             children: [
@@ -644,7 +696,10 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                                   color: Colors.purple.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(Icons.access_time, color: Colors.purple),
+                                child: const Icon(
+                                  Icons.access_time,
+                                  color: Colors.purple,
+                                ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -655,7 +710,9 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                                       'Notification Time',
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: isDarkMode ? Colors.grey[400] : Colors.grey,
+                                        color: isDarkMode
+                                            ? Colors.grey[400]
+                                            : Colors.grey,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
@@ -669,7 +726,13 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                                   ],
                                 ),
                               ),
-                              Icon(Icons.arrow_forward_ios, size: 16, color: isDarkMode ? Colors.grey[600] : Colors.grey),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16,
+                                color: isDarkMode
+                                    ? Colors.grey[600]
+                                    : Colors.grey,
+                              ),
                             ],
                           ),
                         ),
@@ -695,12 +758,19 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen> {
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
                           )
                         : Text(
-                            widget.document == null ? 'Add Document' : 'Update Document',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            widget.document == null
+                                ? 'Add Document'
+                                : 'Update Document',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                   ),
                 ),

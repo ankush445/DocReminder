@@ -76,7 +76,7 @@ class DocumentModel extends HiveObject {
     final today = _getTodayAtMidnight();
     final expiry = _getExpiryDateAtMidnight();
     final sevenDaysFromNow = today.add(const Duration(days: 7));
-    
+
     // Expiring soon if expiry is after today and before/on 7 days from now
     return expiry.isAfter(today) && expiry.isBefore(sevenDaysFromNow);
   }

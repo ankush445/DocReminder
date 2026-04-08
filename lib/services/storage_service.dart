@@ -40,8 +40,9 @@ class StorageService {
 
   List<DocumentModel> searchDocuments(String query) {
     return _documentBox.values
-        .where((doc) =>
-            doc.documentName.toLowerCase().contains(query.toLowerCase()))
+        .where(
+          (doc) => doc.documentName.toLowerCase().contains(query.toLowerCase()),
+        )
         .toList();
   }
 

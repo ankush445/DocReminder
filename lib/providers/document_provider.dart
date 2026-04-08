@@ -10,15 +10,14 @@ import 'notification_provider.dart';
 
 final documentsProvider =
     StateNotifierProvider<DocumentNotifier, List<DocumentModel>>((ref) {
-  final storageService = ref.watch(storageServiceProvider);
-  final notificationService = ref.watch(notificationServiceProvider);
-  return DocumentNotifier(storageService, notificationService);
-});
+      final storageService = ref.watch(storageServiceProvider);
+      final notificationService = ref.watch(notificationServiceProvider);
+      return DocumentNotifier(storageService, notificationService);
+    });
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
-final filteredDocumentsProvider =
-    Provider<List<DocumentModel>>((ref) {
+final filteredDocumentsProvider = Provider<List<DocumentModel>>((ref) {
   final documents = ref.watch(documentsProvider);
   final query = ref.watch(searchQueryProvider);
 
@@ -27,36 +26,37 @@ final filteredDocumentsProvider =
   }
 
   return documents
-      .where((doc) =>
-          doc.documentName.toLowerCase().contains(query.toLowerCase()))
+      .where(
+        (doc) => doc.documentName.toLowerCase().contains(query.toLowerCase()),
+      )
       .toList();
 });
 
 final documentsByStatusProvider =
     Provider<Map<DocumentStatus, List<DocumentModel>>>((ref) {
-  // Use filteredDocumentsProvider to apply search filter first
-  final documents = ref.watch(filteredDocumentsProvider);
+      // Use filteredDocumentsProvider to apply search filter first
+      final documents = ref.watch(filteredDocumentsProvider);
 
-  final valid = <DocumentModel>[];
-  final expiringSoon = <DocumentModel>[];
-  final expired = <DocumentModel>[];
+      final valid = <DocumentModel>[];
+      final expiringSoon = <DocumentModel>[];
+      final expired = <DocumentModel>[];
 
-  for (final doc in documents) {
-    if (doc.isExpired) {
-      expired.add(doc);
-    } else if (doc.isExpiringsoon) {
-      expiringSoon.add(doc);
-    } else {
-      valid.add(doc);
-    }
-  }
+      for (final doc in documents) {
+        if (doc.isExpired) {
+          expired.add(doc);
+        } else if (doc.isExpiringsoon) {
+          expiringSoon.add(doc);
+        } else {
+          valid.add(doc);
+        }
+      }
 
-  return {
-    DocumentStatus.valid: valid,
-    DocumentStatus.expiringSoon: expiringSoon,
-    DocumentStatus.expired: expired,
-  };
-});
+      return {
+        DocumentStatus.valid: valid,
+        DocumentStatus.expiringSoon: expiringSoon,
+        DocumentStatus.expired: expired,
+      };
+    });
 
 class DocumentNotifier extends StateNotifier<List<DocumentModel>> {
   final StorageService _storageService;
@@ -64,7 +64,7 @@ class DocumentNotifier extends StateNotifier<List<DocumentModel>> {
   final FileService _fileService = FileService();
 
   DocumentNotifier(this._storageService, this._notificationService)
-      : super([]) {
+    : super([]) {
     _loadDocuments();
   }
 
@@ -86,7 +86,9 @@ class DocumentNotifier extends StateNotifier<List<DocumentModel>> {
       await _notificationService.scheduleDocumentReminder(document);
     } else {
       if (document.notificationId != null) {
-        await _notificationService.cancelNotificationById(document.notificationId!);
+        await _notificationService.cancelNotificationById(
+          document.notificationId!,
+        );
       }
     }
     _loadDocuments();
@@ -98,8 +100,9 @@ class DocumentNotifier extends StateNotifier<List<DocumentModel>> {
     if (document != null) {
       // Cancel notification
       if (document.notificationId != null) {
-        await _notificationService
-            .cancelNotificationById(document.notificationId!);
+        await _notificationService.cancelNotificationById(
+          document.notificationId!,
+        );
       }
 
       //  Delete file safely

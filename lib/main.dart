@@ -82,7 +82,10 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: Colors.blue, width: 2),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
           hintStyle: TextStyle(color: Colors.grey[500]),
         ),
         cardTheme: CardThemeData(
@@ -146,7 +149,10 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: Colors.blue, width: 2),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
           hintStyle: TextStyle(color: Colors.grey[500]),
         ),
         cardTheme: CardThemeData(
@@ -159,9 +165,7 @@ class MyApp extends StatelessWidget {
       ),
       themeMode: ThemeMode.system,
       home: const SplashScreen(),
-      routes: {
-        '/home': (context) => const HomeScreen(),
-      },
+      routes: {'/home': (context) => const HomeScreen()},
     );
   }
 }

@@ -22,25 +22,22 @@ class NotificationService {
     try {
       // ✅ Android initialization
       const AndroidInitializationSettings androidSettings =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+          AndroidInitializationSettings('@mipmap/ic_launcher');
 
       // ✅ iOS initialization
       const DarwinInitializationSettings iosSettings =
-      DarwinInitializationSettings(
-        requestAlertPermission: false,
-        requestBadgePermission: false,
-        requestSoundPermission: false,
-        defaultPresentAlert: true,
-        defaultPresentBadge: true,
-        defaultPresentSound: true,
-      );
+          DarwinInitializationSettings(
+            requestAlertPermission: false,
+            requestBadgePermission: false,
+            requestSoundPermission: false,
+            defaultPresentAlert: true,
+            defaultPresentBadge: true,
+            defaultPresentSound: true,
+          );
 
       // ✅ Combine both (CORRECT WAY)
       const InitializationSettings initializationSettings =
-      InitializationSettings(
-        android: androidSettings,
-        iOS: iosSettings,
-      );
+          InitializationSettings(android: androidSettings, iOS: iosSettings);
 
       // ✅ Initialize plugin
       await _flutterLocalNotificationsPlugin.initialize(
@@ -73,7 +70,8 @@ class NotificationService {
 
         await _flutterLocalNotificationsPlugin
             .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>()
+              AndroidFlutterLocalNotificationsPlugin
+            >()
             ?.createNotificationChannel(channel);
       }
     } catch (e) {
@@ -97,12 +95,9 @@ class NotificationService {
         // Request iOS permissions
         await _flutterLocalNotificationsPlugin
             .resolvePlatformSpecificImplementation<
-                IOSFlutterLocalNotificationsPlugin>()
-            ?.requestPermissions(
-              alert: true,
-              badge: true,
-              sound: true,
-            );
+              IOSFlutterLocalNotificationsPlugin
+            >()
+            ?.requestPermissions(alert: true, badge: true, sound: true);
       }
     } catch (e) {
       _logError('Failed to request permissions', e);
@@ -114,8 +109,8 @@ class NotificationService {
   }
 
   Future<int> _getNextNotificationId() async {
-    final notifications =
-        await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
+    final notifications = await _flutterLocalNotificationsPlugin
+        .pendingNotificationRequests();
     if (notifications.isEmpty) return 1;
     return notifications.map((n) => n.id).reduce((a, b) => a > b ? a : b) + 1;
   }
@@ -130,8 +125,9 @@ class NotificationService {
       // Cancel existing notification
       if (document.notificationId != null) {
         try {
-          await _flutterLocalNotificationsPlugin
-              .cancel(document.notificationId!);
+          await _flutterLocalNotificationsPlugin.cancel(
+            document.notificationId!,
+          );
         } catch (e) {
           _logError('Failed to cancel existing notification', e);
         }
@@ -146,12 +142,13 @@ class NotificationService {
       }
 
       // Calculate when reminders should start
-      final reminderStartDate = expiryDate
-          .subtract(Duration(days: document.reminderOffset.days));
+      final reminderStartDate = expiryDate.subtract(
+        Duration(days: document.reminderOffset.days),
+      );
 
       // Determine the first notification date
       DateTime firstNotificationDate;
-      
+
       if (reminderStartDate.isBefore(now)) {
         // Reminder period has already started, use today
         firstNotificationDate = DateTime(
@@ -161,10 +158,12 @@ class NotificationService {
           document.reminderHour,
           document.reminderMinute,
         );
-        
+
         // If today's time has already passed, start from tomorrow
         if (firstNotificationDate.isBefore(now)) {
-          firstNotificationDate = firstNotificationDate.add(const Duration(days: 1));
+          firstNotificationDate = firstNotificationDate.add(
+            const Duration(days: 1),
+          );
         }
       } else {
         // Reminder period hasn't started yet, use the reminder start date
@@ -179,9 +178,9 @@ class NotificationService {
 
       // Schedule daily notifications from first notification date until expiry date
       final notificationId = await _getNextNotificationId();
-      
+
       final tzDateTime = tz.TZDateTime.from(firstNotificationDate, tz.local);
-      
+
       await _flutterLocalNotificationsPlugin.zonedSchedule(
         notificationId,
         'Document Reminder',
@@ -212,7 +211,10 @@ class NotificationService {
       document.notificationId = notificationId;
       return true;
     } catch (e) {
-      _logError('Failed to schedule notification for ${document.documentName}', e);
+      _logError(
+        'Failed to schedule notification for ${document.documentName}',
+        e,
+      );
       return false;
     }
   }

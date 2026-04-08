@@ -20,10 +20,10 @@ class ReminderOffsetDropdown extends StatelessWidget {
       onChanged: enabled ? (value) => onChanged(value!) : null,
       isExpanded: true,
       items: ReminderOffset.values
-          .map((offset) => DropdownMenuItem(
-                value: offset,
-                child: Text(offset.label),
-              ))
+          .map(
+            (offset) =>
+                DropdownMenuItem(value: offset, child: Text(offset.label)),
+          )
           .toList(),
     );
   }

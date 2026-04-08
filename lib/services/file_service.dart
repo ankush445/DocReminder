@@ -49,7 +49,6 @@ class FileService {
     }
   }
 
-
   Future<bool> _handlePermissionDenied(String permissionType) async {
     try {
       if (kDebugMode) {
@@ -107,7 +106,6 @@ class FileService {
 
   Future<String?> pickFromGallery() async {
     try {
-
       final photo = await _imagePicker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 85,
@@ -160,11 +158,13 @@ class FileService {
 
       // Copy the file
       final newFile = await sourceFile.copy(newPath);
-      
+
       // Verify the file was copied successfully
       if (!await newFile.exists()) {
         if (kDebugMode) {
-          debugPrint('File copy failed - destination file does not exist: $newPath');
+          debugPrint(
+            'File copy failed - destination file does not exist: $newPath',
+          );
         }
         throw Exception('File copy failed');
       }
@@ -187,11 +187,11 @@ class FileService {
     try {
       final file = File(filePath);
       final exists = await file.exists();
-      
+
       if (kDebugMode) {
         debugPrint('File verification for $filePath: exists=$exists');
       }
-      
+
       return exists;
     } catch (e) {
       if (kDebugMode) {
@@ -232,6 +232,7 @@ class FileService {
     final dir = await getApplicationDocumentsDirectory();
     return path.join(dir.path, 'documents', fileName);
   }
+
   String getFileExtension(String filePath) {
     return path.extension(filePath).replaceFirst('.', '').toUpperCase();
   }

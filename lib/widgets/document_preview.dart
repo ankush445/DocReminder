@@ -108,7 +108,9 @@ class _DocumentPreviewState extends State<DocumentPreview> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('File not found. The file may have been moved or deleted.'),
+              content: Text(
+                'File not found. The file may have been moved or deleted.',
+              ),
               backgroundColor: Colors.red,
               duration: Duration(seconds: 3),
             ),
@@ -188,11 +190,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
                 color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                icon,
-                size: 48,
-                color: color,
-              ),
+              child: Icon(icon, size: 48, color: color),
             ),
             const SizedBox(height: 12),
             Text(
@@ -208,10 +206,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Container(
