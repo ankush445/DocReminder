@@ -1,4 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'home_screen.dart'; // for DocColors
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -8,195 +12,280 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-  late Animation<Offset> _slideAnimation;
+    with TickerProviderStateMixin {
+  late final AnimationController _logoController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1000),
+  );
+  late final AnimationController _textController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 700),
+  );
+  late final AnimationController _pulseController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1600),
+  )..repeat(reverse: true);
+
+  late final Animation<double> _logoScale = CurvedAnimation(
+    parent: _logoController,
+    curve: Curves.elasticOut,
+  );
+  late final Animation<double> _logoFade = CurvedAnimation(
+    parent: _logoController,
+    curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+  );
+  late final Animation<double> _textFade = CurvedAnimation(
+    parent: _textController,
+    curve: Curves.easeOut,
+  );
+  late final Animation<Offset> _textSlide = Tween(
+    begin: const Offset(0, 0.25),
+    end: Offset.zero,
+  ).animate(CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic));
+  late final Animation<double> _pulse = Tween(begin: 0.85, end: 1.0).animate(
+    CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+  );
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1800),
-      vsync: this,
-    );
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ));
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
-    );
+    _logoController.forward().then((_) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) _textController.forward();
+      });
+    });
 
-    _scaleAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
-    );
-
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-          CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-        );
-
-    _animationController.forward();
-
-    // Navigate to home screen after 2.5 seconds
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
+    Future.delayed(const Duration(milliseconds: 2600), () {
+      if (mounted) Navigator.of(context).pushReplacementNamed('/home');
     });
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _logoController.dispose();
+    _textController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.blue.shade700,
-              Colors.blue.shade500,
-              Colors.cyan.shade400,
-            ],
-            stops: const [0.0, 0.5, 1.0],
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          blurRadius: 30,
-                          offset: const Offset(0, 15),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.blue.shade600,
-                                Colors.blue.shade400,
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Icon(
-                            Icons.description,
-                            size: 60,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 5,
-                          right: 5,
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.green.withValues(alpha: 0.4),
-                                  blurRadius: 10,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.check,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+      backgroundColor: DocColors.navy,
+      body: Stack(
+        children: [
+          // Radial glow — top right
+          Positioned(
+            top: -80, right: -60,
+            child: Container(
+              width: 300, height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(colors: [
+                  DocColors.gold.withValues(alpha: 0.14),
+                  Colors.transparent,
+                ]),
               ),
-              const SizedBox(height: 40),
-              SlideTransition(
-                position: _slideAnimation,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Column(
-                    children: [
-                      const Text(
-                        'DocReminder',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        width: 60,
-                        height: 4,
+            ),
+          ),
+          // Radial glow — bottom left
+          Positioned(
+            bottom: -80, left: -60,
+            child: Container(
+              width: 260, height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(colors: [
+                  DocColors.gold.withValues(alpha: 0.07),
+                  Colors.transparent,
+                ]),
+              ),
+            ),
+          ),
+
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // ── Logo ──────────────────────────────────────────────
+                FadeTransition(
+                  opacity: _logoFade,
+                  child: ScaleTransition(
+                    scale: _logoScale,
+                    child: ScaleTransition(
+                      scale: _pulse,
+                      child: Container(
+                        width: 110, height: 110,
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(2),
+                          color: DocColors.navy2,
+                          borderRadius: BorderRadius.circular(28),
+                          border: Border.all(
+                            color: DocColors.gold.withValues(alpha: 0.35),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: DocColors.gold.withValues(alpha: 0.18),
+                              blurRadius: 36,
+                              offset: const Offset(0, 12),
+                            ),
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Icon(
+                              Icons.description_outlined,
+                              size: 52,
+                              color: DocColors.gold,
+                            ),
+                            Positioned(
+                              bottom: 16, right: 16,
+                              child: Container(
+                                width: 22, height: 22,
+                                decoration: BoxDecoration(
+                                  color: DocColors.green,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: DocColors.navy2,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  color: Colors.white,
+                                  size: 13,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Never miss a document deadline',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.white70,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 60),
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.white.withValues(alpha: 0.8),
                     ),
-                    strokeWidth: 3,
                   ),
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 36),
+
+                // ── Text block ────────────────────────────────────────
+                SlideTransition(
+                  position: _textSlide,
+                  child: FadeTransition(
+                    opacity: _textFade,
+                    child: Column(
+                      children: [
+                        Text(
+                          'DOCUMENT VAULT',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 2.4,
+                            color: DocColors.gold,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.dmSerifDisplay(
+                              fontSize: 40,
+                              color: DocColors.text1,
+                              letterSpacing: -0.5,
+                            ),
+                            children: const [
+                              TextSpan(text: 'Doc'),
+                              TextSpan(
+                                text: 'Reminder',
+                                style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  color: DocColors.gold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Container(
+                          width: 40, height: 1.5,
+                          decoration: BoxDecoration(
+                            color: DocColors.gold.withValues(alpha: 0.4),
+                            borderRadius: BorderRadius.circular(1),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          'Never miss a document deadline',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                            color: DocColors.text3,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 72),
+
+                // ── Loading dots ──────────────────────────────────────
+                FadeTransition(
+                  opacity: _textFade,
+                  child: _LoadingDots(),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
+}
+
+class _LoadingDots extends StatefulWidget {
+  @override
+  State<_LoadingDots> createState() => _LoadingDotsState();
+}
+
+class _LoadingDotsState extends State<_LoadingDots>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  )..repeat();
+
+  @override
+  void dispose() { _c.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: _c,
+    builder: (_, _) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(3, (i) {
+          final t = ((_c.value * 3) - i).clamp(0.0, 1.0);
+          final opacity = (t < 0.5 ? t * 2 : (1 - t) * 2).clamp(0.2, 1.0);
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            width: 6, height: 6,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: DocColors.gold.withValues(alpha: opacity),
+            ),
+          );
+        }),
+      );
+    },
+  );
 }

@@ -35,6 +35,10 @@ class DocumentModel extends HiveObject {
   @HiveField(9)
   late int reminderMinute;
 
+  @HiveField(10)
+  late String documentType;
+
+
   DocumentModel({
     required this.id,
     required this.documentName,
@@ -46,6 +50,8 @@ class DocumentModel extends HiveObject {
     DateTime? createdAt,
     this.reminderHour = 9,
     this.reminderMinute = 0,
+    this.documentType = "Other"
+
   }) {
     this.createdAt = createdAt ?? DateTime.now();
   }
@@ -105,6 +111,8 @@ class DocumentModel extends HiveObject {
     DateTime? createdAt,
     int? reminderHour,
     int? reminderMinute,
+    String? documentType,
+
   }) {
     return DocumentModel(
       id: id ?? this.id,
@@ -117,6 +125,8 @@ class DocumentModel extends HiveObject {
       createdAt: createdAt ?? this.createdAt,
       reminderHour: reminderHour ?? this.reminderHour,
       reminderMinute: reminderMinute ?? this.reminderMinute,
+      documentType: documentType ?? this.documentType,
+
     );
   }
 }

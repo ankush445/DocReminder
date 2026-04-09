@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../screens/home_screen.dart'; // for DocColors
 
-class EmptyState extends StatelessWidget {
+class EmptyState extends StatefulWidget {
   final String title;
   final String message;
   final IconData icon;
@@ -9,45 +11,139 @@ class EmptyState extends StatelessWidget {
     super.key,
     required this.title,
     required this.message,
-    this.icon = Icons.folder_open,
+    this.icon = Icons.folder_open_outlined,
   });
+
+  @override
+  State<EmptyState> createState() => _EmptyStateState();
+}
+
+class _EmptyStateState extends State<EmptyState>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 600),
+  );
+  late final Animation<double> _fade =
+  CurvedAnimation(parent: _c, curve: Curves.easeOut);
+  late final Animation<Offset> _slide = Tween(
+    begin: const Offset(0, 0.12),
+    end: Offset.zero,
+  ).animate(CurvedAnimation(parent: _c, curve: Curves.easeOutCubic));
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 80), () {
+      if (mounted) _c.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(icon, size: 80, color: Colors.grey[400]),
+      child: FadeTransition(
+        opacity: _fade,
+        child: SlideTransition(
+          position: _slide,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon container with layered rings
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Outer ring
+                    Container(
+                      width: 100, height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: DocColors.gold.withValues(alpha: 0.08),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    // Middle ring
+                    Container(
+                      width: 80, height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: DocColors.gold.withValues(alpha: 0.14),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    // Icon core
+                    Container(
+                      width: 64, height: 64,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: DocColors.navy2,
+                        border: Border.all(
+                          color: DocColors.gold.withValues(alpha: 0.25),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Icon(
+                        widget.icon,
+                        size: 28,
+                        color: DocColors.text3,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // Title
+                Text(
+                  widget.title,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.dmSerifDisplay(
+                    fontSize: 22,
+                    fontStyle: FontStyle.italic,
+                    color: DocColors.text2,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                // Divider line
+                Container(
+                  width: 32, height: 1,
+                  decoration: BoxDecoration(
+                    color: DocColors.gold.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(1),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                // Message
+                Text(
+                  widget.message,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: DocColors.text3,
+                    height: 1.6,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 24),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Colors.grey[700],
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                message,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

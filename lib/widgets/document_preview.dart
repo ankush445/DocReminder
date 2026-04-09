@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:open_file/open_file.dart';
+import '../screens/home_screen.dart'; // for DocColors
 
 class DocumentPreview extends StatefulWidget {
   final String filePath;
@@ -21,227 +24,198 @@ class _DocumentPreviewState extends State<DocumentPreview> {
   bool _isOpening = false;
   DateTime? _lastTapTime;
 
-  String _getFileExtension(String path) {
-    return path.split('.').last.toLowerCase();
-  }
+  String get _extension => widget.filePath.split('.').last.toLowerCase();
 
-  IconData _getFileIcon(String extension) {
-    switch (extension) {
-      case 'pdf':
-        return Icons.picture_as_pdf;
+  // ── File type mappings ────────────────────────────────────────────────
+
+  IconData get _icon {
+    switch (_extension) {
+      case 'pdf':  return Icons.picture_as_pdf_outlined;
       case 'jpg':
       case 'jpeg':
       case 'png':
       case 'gif':
-      case 'bmp':
-        return Icons.image;
+      case 'bmp':  return Icons.image_outlined;
       case 'doc':
-      case 'docx':
-        return Icons.description;
+      case 'docx': return Icons.description_outlined;
       case 'xls':
-      case 'xlsx':
-        return Icons.table_chart;
+      case 'xlsx': return Icons.table_chart_outlined;
       case 'ppt':
-      case 'pptx':
-        return Icons.slideshow;
-      default:
-        return Icons.insert_drive_file;
+      case 'pptx': return Icons.slideshow_outlined;
+      default:     return Icons.insert_drive_file_outlined;
     }
   }
 
-  Color _getFileColor(String extension) {
-    switch (extension) {
-      case 'pdf':
-        return Colors.red;
+  Color get _color {
+    switch (_extension) {
+      case 'pdf':  return DocColors.red;
       case 'jpg':
       case 'jpeg':
       case 'png':
       case 'gif':
-      case 'bmp':
-        return Colors.purple;
+      case 'bmp':  return const Color(0xFFB06DD4);  // soft purple
       case 'doc':
-      case 'docx':
-        return Colors.blue;
+      case 'docx': return const Color(0xFF5B9BD5);  // word blue
       case 'xls':
-      case 'xlsx':
-        return Colors.green;
+      case 'xlsx': return DocColors.green;
       case 'ppt':
-      case 'pptx':
-        return Colors.orange;
-      default:
-        return Colors.grey;
+      case 'pptx': return DocColors.amber;
+      default:     return DocColors.text3;
     }
   }
+
+  // ── Open file ─────────────────────────────────────────────────────────
 
   Future<void> _openFile() async {
-    // Prevent repeated taps - if already opening, cancel the operation
     if (_isOpening) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('File opening cancelled'),
-            backgroundColor: Colors.orange,
-            duration: Duration(milliseconds: 800),
-          ),
-        );
-      }
       setState(() => _isOpening = false);
       return;
     }
-
-    // Debounce: prevent multiple taps within 500ms
     final now = DateTime.now();
     if (_lastTapTime != null &&
-        now.difference(_lastTapTime!).inMilliseconds < 500) {
-      return;
-    }
+        now.difference(_lastTapTime!).inMilliseconds < 500) return;
     _lastTapTime = now;
 
+    HapticFeedback.selectionClick();
     setState(() => _isOpening = true);
 
     try {
-      // Validate file exists before attempting to open
       final file = File(widget.filePath);
-      final fileExists = await file.exists();
-
-      if (!fileExists) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'File not found. The file may have been moved or deleted.',
-              ),
-              backgroundColor: Colors.red,
-              duration: Duration(seconds: 3),
-            ),
-          );
-        }
-        if (kDebugMode) {
-          debugPrint('File not found at path: ${widget.filePath}');
-        }
+      if (!await file.exists()) {
+        if (mounted) _showSnackbar('File not found. It may have been moved or deleted.', isError: true);
         return;
       }
-
-      // Attempt to open the file
       final result = await OpenFile.open(widget.filePath);
-
-      // Only show snackbar if file was successfully opened
-      // Don't show snackbar for successful opens to avoid showing after dismissal
       if (mounted && result.type != ResultType.done) {
-        if (result.type == ResultType.noAppToOpen) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('No app available to open this file type'),
-              backgroundColor: Colors.orange,
-              duration: Duration(seconds: 2),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error opening file: ${result.message}'),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 2),
-          ),
+        _showSnackbar(
+          result.type == ResultType.noAppToOpen
+              ? 'No app available to open this file type'
+              : 'Error opening file: ${result.message}',
+          isError: true,
         );
       }
+    } catch (e) {
+      if (mounted) _showSnackbar('Error: $e', isError: true);
+      if (kDebugMode) debugPrint('DocumentPreview error: $e');
     } finally {
-      if (mounted) {
-        setState(() => _isOpening = false);
-      }
+      if (mounted) setState(() => _isOpening = false);
     }
   }
 
+  void _showSnackbar(String msg, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg, style: GoogleFonts.dmSans(color: DocColors.text1)),
+      backgroundColor: isError
+          ? DocColors.red.withValues(alpha: 0.85)
+          : DocColors.green.withValues(alpha: 0.85),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ));
+  }
+
+  // ── Build ─────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
-    final extension = _getFileExtension(widget.filePath);
-    final icon = _getFileIcon(extension);
-    final color = _getFileColor(extension);
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return GestureDetector(
       onTap: _openFile,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
+          color: DocColors.navy2,
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+            color: _color.withValues(alpha: 0.2),
           ),
-          borderRadius: BorderRadius.circular(12),
-          color: isDarkMode ? Colors.grey[900] : Colors.grey[50],
         ),
-        child: Column(
+        child: Row(
           children: [
+            // File type icon box
             Container(
-              width: 80,
-              height: 80,
+              width: 52, height: 52,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
+                color: _color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, size: 48, color: color),
+              child: Icon(_icon, color: _color, size: 26),
             ),
-            const SizedBox(height: 12),
-            Text(
-              'File Preview',
-              style: TextStyle(
-                fontSize: 12,
-                color: isDarkMode ? Colors.grey[400] : Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              widget.fileName,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                extension.toUpperCase(),
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  _isOpening ? Icons.hourglass_bottom : Icons.touch_app,
-                  size: 16,
-                  color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  _isOpening ? 'Opening...' : 'Tap to open',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
+            const SizedBox(width: 14),
+
+            // File name + extension badge
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.fileName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: DocColors.text1,
+                    ),
                   ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: _color.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: _color.withValues(alpha: 0.25)),
+                        ),
+                        child: Text(
+                          _extension.toUpperCase(),
+                          style: GoogleFonts.dmSans(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: _color,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'File Preview',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 11,
+                          color: DocColors.text3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 10),
+
+            // Open button
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              width: 36, height: 36,
+              decoration: BoxDecoration(
+                color: _isOpening
+                    ? _color.withValues(alpha: 0.08)
+                    : _color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: _color.withValues(alpha: 0.2)),
+              ),
+              child: _isOpening
+                  ? Padding(
+                padding: const EdgeInsets.all(9),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(_color),
                 ),
-              ],
+              )
+                  : Icon(
+                Icons.open_in_new_rounded,
+                color: _color,
+                size: 17,
+              ),
             ),
           ],
         ),

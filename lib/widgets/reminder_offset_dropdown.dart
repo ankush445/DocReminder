@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/reminder_offset.dart';
+import '../screens/home_screen.dart'; // for DocColors
 
 class ReminderOffsetDropdown extends StatelessWidget {
   final ReminderOffset selectedOffset;
@@ -15,16 +17,65 @@ class ReminderOffsetDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<ReminderOffset>(
-      value: selectedOffset,
-      onChanged: enabled ? (value) => onChanged(value!) : null,
-      isExpanded: true,
-      items: ReminderOffset.values
-          .map(
-            (offset) =>
-                DropdownMenuItem(value: offset, child: Text(offset.label)),
-          )
-          .toList(),
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<ReminderOffset>(
+        value: selectedOffset,
+        isExpanded: true,
+        icon: Icon(
+          Icons.expand_more_rounded,
+          color: enabled ? DocColors.text2 : DocColors.text3,
+          size: 20,
+        ),
+        dropdownColor: DocColors.navy3,
+        style: GoogleFonts.dmSans(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: enabled ? DocColors.text1 : DocColors.text3,
+        ),
+        onChanged: enabled ? (v) => onChanged(v!) : null,
+        items: ReminderOffset.values.map((offset) {
+          final isSelected = offset == selectedOffset;
+          return DropdownMenuItem<ReminderOffset>(
+            value: offset,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Row(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    width: 6, height: 6,
+                    margin: const EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isSelected
+                          ? DocColors.amber
+                          : Colors.transparent,
+                      border: Border.all(
+                        color: isSelected
+                            ? DocColors.amber
+                            : DocColors.text3,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    offset.label,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      fontWeight: isSelected
+                          ? FontWeight.w500
+                          : FontWeight.w400,
+                      color: isSelected
+                          ? DocColors.amber
+                          : DocColors.text2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }
