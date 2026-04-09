@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/document_model.dart';
-import '../screens/home_screen.dart'; // for DocColors
+import '../theme/app_colors.dart';
 
 class DocumentCard extends StatefulWidget {
   final DocumentModel document;
@@ -33,15 +33,26 @@ class _DocumentCardState extends State<DocumentCard>
   // ── Status helpers ──────────────────────────────────────────────────────
 
   Color get _statusColor {
-    if (widget.document.isExpired) return DocColors.red;
-    if (widget.document.isExpiringsoon) return DocColors.amber;
-    return DocColors.green;
+    if (widget.document.isExpired) return AppColors.error;
+
+    // Handle "Expires Today"
+    if (widget.document.daysUntilExpiry == 0) {
+      return AppColors.error;
+    }
+
+    if (widget.document.isExpiringsoon) return AppColors.warning;
+
+    return AppColors.success;
   }
 
   Color get _statusDim => _statusColor.withValues(alpha: 0.12);
 
   String get _statusLabel {
     if (widget.document.isExpired) return 'Expired';
+    // Handle "Expires Today"
+    if (widget.document.daysUntilExpiry == 0) {
+      return 'Expires Today';
+    }
     if (widget.document.isExpiringsoon) return 'Expiring Soon';
     return 'Valid';
   }
@@ -170,9 +181,9 @@ class _CardBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: DocColors.navy2,
+        color: AppColors.lightBackground2,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        border: Border.all(color: statusColor.withValues(alpha: 0.10)),
       ),
       child: Stack(
         children: [
@@ -209,7 +220,7 @@ class _CardBody extends StatelessWidget {
                       child: Icon(
                         _iconForDoc(document.documentName),
                         color: statusColor,
-                        size: 20,
+                        size: 30,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -225,8 +236,8 @@ class _CardBody extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.dmSans(
                               fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: DocColors.text1,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
                               height: 1.3,
                             ),
                           ),
@@ -234,8 +245,9 @@ class _CardBody extends StatelessWidget {
                           Text(
                             document.documentType,
                             style: GoogleFonts.dmSans(
-                              fontSize: 12,
-                              color: DocColors.text3,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textTertiary,
                             ),
                           ),
                         ],
@@ -260,18 +272,18 @@ class _CardBody extends StatelessWidget {
 
                 const SizedBox(height: 14),
 
-                // Progress bar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: LinearProgressIndicator(
-                    value: validityFraction,
-                    minHeight: 3,
-                    backgroundColor: Colors.white.withValues(alpha: 0.06),
-                    valueColor: AlwaysStoppedAnimation(statusColor),
-                  ),
-                ),
+                // // Progress bar
+                // ClipRRect(
+                //   borderRadius: BorderRadius.circular(100),
+                //   child: LinearProgressIndicator(
+                //     value: validityFraction,
+                //     minHeight: 3,
+                //     backgroundColor: statusColor.withValues(alpha: 0.06),
+                //     valueColor: AlwaysStoppedAnimation(statusColor),
+                //   ),
+                // ),
 
-                const SizedBox(height: 14),
+                // const SizedBox(height: 14),
 
                 // Footer
                 Row(
@@ -283,17 +295,19 @@ class _CardBody extends StatelessWidget {
                         Text(
                           dateLabel,
                           style: GoogleFonts.dmSans(
-                              fontSize: 11, color: DocColors.text3),
+                              fontSize: 12, color: AppColors.textTertiary),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           dateValue,
                           style: GoogleFonts.dmSans(
-                            fontSize: 13,
+                            fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: document.isExpired || document.isExpiringsoon
+                            color: (document.isExpired ||
+                                document.isExpiringsoon ||
+                                document.daysUntilExpiry == 0)
                                 ? statusColor
-                                : DocColors.text2,
+                                : AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -338,10 +352,10 @@ class _DeleteDialog extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: DocColors.navy2,
+          color: AppColors.lightBackground2,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: DocColors.red.withValues(alpha: 0.25),
+            color: AppColors.error.withValues(alpha: 0.25),
           ),
           boxShadow: [
             BoxShadow(
@@ -358,15 +372,15 @@ class _DeleteDialog extends StatelessWidget {
             Container(
               width: 56, height: 56,
               decoration: BoxDecoration(
-                color: DocColors.red.withValues(alpha: 0.12),
+                color: AppColors.error.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: DocColors.red.withValues(alpha: 0.25),
+                  color: AppColors.error.withValues(alpha: 0.25),
                 ),
               ),
               child: Icon(
                 Icons.delete_outline_rounded,
-                color: DocColors.red,
+                color: AppColors.error,
                 size: 26,
               ),
             ),
@@ -378,7 +392,7 @@ class _DeleteDialog extends StatelessWidget {
               'Delete Document?',
               style: GoogleFonts.dmSerifDisplay(
                 fontSize: 20,
-                color: DocColors.text1,
+                color: AppColors.textPrimary,
                 letterSpacing: -0.3,
               ),
             ),
@@ -391,7 +405,7 @@ class _DeleteDialog extends StatelessWidget {
               text: TextSpan(
                 style: GoogleFonts.dmSans(
                   fontSize: 13,
-                  color: DocColors.text3,
+                  color: AppColors.textTertiary,
                   height: 1.6,
                 ),
                 children: [
@@ -401,7 +415,7 @@ class _DeleteDialog extends StatelessWidget {
                     style: GoogleFonts.dmSans(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: DocColors.text2,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                   const TextSpan(
@@ -430,7 +444,7 @@ class _DeleteDialog extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 13),
                       decoration: BoxDecoration(
-                        color: DocColors.navy3,
+                        color: AppColors.lightBackground3,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.08),
@@ -442,7 +456,7 @@ class _DeleteDialog extends StatelessWidget {
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: DocColors.text2,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -462,10 +476,10 @@ class _DeleteDialog extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 13),
                       decoration: BoxDecoration(
-                        color: DocColors.red.withValues(alpha: 0.15),
+                        color: AppColors.error.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: DocColors.red.withValues(alpha: 0.35),
+                          color: AppColors.error.withValues(alpha: 0.35),
                         ),
                       ),
                       child: Center(
@@ -474,7 +488,7 @@ class _DeleteDialog extends StatelessWidget {
                           children: [
                             Icon(
                               Icons.delete_outline_rounded,
-                              color: DocColors.red,
+                              color: AppColors.error,
                               size: 16,
                             ),
                             const SizedBox(width: 6),
@@ -483,7 +497,7 @@ class _DeleteDialog extends StatelessWidget {
                               style: GoogleFonts.dmSans(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: DocColors.red,
+                                color: AppColors.error,
                               ),
                             ),
                           ],
@@ -523,9 +537,9 @@ class _ActionButtonState extends State<_ActionButton> {
   @override
   Widget build(BuildContext context) {
     final activeColor =
-    widget.isDestructive ? DocColors.red : DocColors.text1;
+    widget.isDestructive ? AppColors.error : AppColors.textPrimary;
     final activeBg = widget.isDestructive
-        ? DocColors.red.withValues(alpha: 0.12)
+        ? AppColors.error.withValues(alpha: 0.12)
         : Colors.white.withValues(alpha: 0.06);
 
     return MouseRegion(
@@ -542,15 +556,15 @@ class _ActionButtonState extends State<_ActionButton> {
             border: Border.all(
               color: _hovered
                   ? (widget.isDestructive
-                  ? DocColors.red.withValues(alpha: 0.25)
+                  ? AppColors.error.withValues(alpha: 0.25)
                   : Colors.white.withValues(alpha: 0.12))
                   : Colors.white.withValues(alpha: 0.06),
             ),
           ),
           child: Icon(
             widget.icon,
-            size: 15,
-            color: _hovered ? activeColor : DocColors.text3,
+            size: 18,
+            color: _hovered ? activeColor : AppColors.textTertiary,
           ),
         ),
       ),
@@ -587,21 +601,21 @@ class _DismissBackground extends StatelessWidget {
     alignment: Alignment.centerRight,
     padding: const EdgeInsets.only(right: 24),
     decoration: BoxDecoration(
-      color: DocColors.red.withValues(alpha: 0.15),
+      color: AppColors.error.withValues(alpha: 0.15),
       borderRadius: BorderRadius.circular(14),
-      border: Border.all(color: DocColors.red.withValues(alpha: 0.3)),
+      border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
     ),
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.delete_outline_rounded, color: DocColors.red, size: 22),
+        Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 22),
         const SizedBox(height: 4),
         Text(
           'Delete',
           style: GoogleFonts.dmSans(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: DocColors.red,
+            color: AppColors.error,
           ),
         ),
       ],

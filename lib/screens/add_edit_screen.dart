@@ -11,7 +11,7 @@ import '../providers/document_provider.dart';
 import '../services/file_service.dart';
 import '../widgets/reminder_offset_dropdown.dart';
 import '../widgets/document_preview.dart';
-import 'home_screen.dart'; // for DocColors
+import '../theme/app_colors.dart';
 
 class AddEditScreen extends ConsumerStatefulWidget {
   final DocumentModel? document;
@@ -192,12 +192,14 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
 
   ThemeData _datePickerTheme(BuildContext context) => ThemeData.dark().copyWith(
     colorScheme: const ColorScheme.dark(
-      primary: DocColors.gold,
-      onPrimary: DocColors.navy,
-      surface: DocColors.navy2,
-      onSurface: DocColors.text1,
+      primary: AppColors.primary,
+      onPrimary: AppColors.textInverse,
+      surface: AppColors.darkSurface,
+      onSurface: AppColors.textInverse,
     ),
-    dialogBackgroundColor: DocColors.navy2,
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.darkSurface,
+    ),
   );
 
   // ── Save ────────────────────────────────────────────────────────────────
@@ -252,10 +254,12 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
 
       if (mounted) {
         await Future.delayed(const Duration(milliseconds: 100));
-        Navigator.of(context).pop();
-        _showSuccessSnackbar(
-          widget.document == null ? 'Document added' : 'Document updated',
-        );
+        if (mounted) {
+          Navigator.of(context).pop();
+          _showSuccessSnackbar(
+            widget.document == null ? 'Document added' : 'Document updated',
+          );
+        }
       }
     } catch (e) {
       if (mounted) _showErrorSnackbar('Error: $e');
@@ -268,8 +272,8 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
 
   void _showErrorSnackbar(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg, style: GoogleFonts.dmSans(color: DocColors.text1)),
-      backgroundColor: DocColors.red.withValues(alpha: 0.85),
+      content: Text(msg, style: GoogleFonts.dmSans(color: AppColors.textPrimary)),
+      backgroundColor: AppColors.error.withValues(alpha: 0.85),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ));
@@ -277,8 +281,8 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
 
   void _showSuccessSnackbar(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg, style: GoogleFonts.dmSans(color: DocColors.navy)),
-      backgroundColor: DocColors.green.withValues(alpha: 0.85),
+      content: Text(msg, style: GoogleFonts.dmSans(color: AppColors.lightBackground)),
+      backgroundColor: AppColors.success.withValues(alpha: 0.85),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ));
@@ -298,48 +302,64 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-          backgroundColor: DocColors.navy,
+          backgroundColor: AppColors.lightBackground,
           body: Stack(
             children: [
               // Radial glow (top-right, matches home screen)
-              Positioned(
-                top: -60, right: -40,
-                child: Container(
-                  width: 200, height: 200,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(colors: [
-                      DocColors.gold.withValues(alpha: 0.10),
-                      Colors.transparent,
-                    ]),
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   top: -60, right: -40,
+              //   child: Container(
+              //     width: 200, height: 200,
+              //     decoration: BoxDecoration(
+              //       shape: BoxShape.circle,
+              //       gradient: RadialGradient(colors: [
+              //         AppColors.primary.withValues(alpha: 0.10),
+              //         Colors.transparent,
+              //       ]),
+              //     ),
+              //   ),
+              // ),
 
               Column(
                 children: [
                   // ── Pinned header ────────────────────────────────────
                   ClipRect(
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                      filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16), // 🔥 softer blur
                       child: Container(
-                        color: DocColors.navy.withValues(alpha: 0.85),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightBackground.withValues(alpha: 0.75),
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.white.withValues(alpha: 0.06), // subtle divider
+                            ),
+                          ),
+                        ),
                         child: SafeArea(
                           bottom: false,
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 8, 20, 12),
+                            padding: const EdgeInsets.fromLTRB(12, 10, 20, 14),
                             child: Row(
                               children: [
-                                // Back button
-                                IconButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  icon: const Icon(
-                                    Icons.arrow_back_ios_new_rounded,
-                                    size: 18,
-                                    color: DocColors.text2,
+                                // 🔥 Improved Back Button (modern pill style)
+                                GestureDetector(
+                                  onTap: () => Navigator.of(context).pop(),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(alpha: 0.08),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.arrow_back_rounded,
+                                      size: 20,
+                                      color: AppColors.textPrimary,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(width: 4),
+
+                                const SizedBox(width: 12),
+
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,17 +369,17 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
                                         style: GoogleFonts.dmSans(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w600,
-                                          letterSpacing: 2.2,
-                                          color: DocColors.gold,
+                                          letterSpacing: 2,
+                                          color: AppColors.primary.withValues(alpha: 0.9),
                                         ),
                                       ),
-                                      const SizedBox(height: 2),
+                                      const SizedBox(height: 4),
                                       Text(
                                         isEdit ? 'Update details' : 'Add to vault',
                                         style: GoogleFonts.dmSerifDisplay(
-                                          fontSize: 22,
-                                          color: DocColors.text1,
-                                          fontStyle: FontStyle.italic,
+                                          fontSize: 24, // 🔥 slightly bigger
+                                          height: 1.1,
+                                          color: AppColors.textPrimary,
                                         ),
                                       ),
                                     ],
@@ -377,7 +397,7 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
                   Expanded(
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 32),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -424,7 +444,7 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
                           const SizedBox(height: 8),
                           _TapRow(
                             icon: Icons.calendar_today_outlined,
-                            iconColor: DocColors.amber,
+                            iconColor: AppColors.warning,
                             label: 'Expiry Date',
                             value: DateFormat('MMM dd, yyyy').format(_selectedDate),
                             onTap: _selectDate,
@@ -450,7 +470,7 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
                             const SizedBox(height: 12),
                             _TapRow(
                               icon: Icons.access_time_outlined,
-                              iconColor: DocColors.gold,
+                              iconColor: AppColors.primary,
                               label: 'Notification Time',
                               value: _reminderTime.format(context),
                               onTap: _selectTime,
@@ -492,53 +512,107 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) => Text(
     label.toUpperCase(),
     style: GoogleFonts.dmSans(
-      fontSize: 10,
-      fontWeight: FontWeight.w600,
+      fontSize: 11,
+      fontWeight: FontWeight.w700,
       letterSpacing: 1.6,
-      color: DocColors.text3,
+      color: AppColors.textTertiary,
     ),
   );
 }
 
 // ── Premium text field ─────────────────────────────────────────────────────
-
 class _PremiumTextField extends StatelessWidget {
   const _PremiumTextField({
     required this.controller,
     required this.hint,
     required this.icon,
   });
+
   final TextEditingController controller;
   final String hint;
   final IconData icon;
 
   @override
-  Widget build(BuildContext context) => TextField(
-    controller: controller,
-    textCapitalization: TextCapitalization.sentences,
-    style: GoogleFonts.dmSans(fontSize: 15, color: DocColors.text1),
-    cursorColor: DocColors.gold,
-    decoration: InputDecoration(
-      hintText: hint,
-      hintStyle: GoogleFonts.dmSans(fontSize: 14, color: DocColors.text3),
-      prefixIcon: Icon(icon, color: DocColors.text3, size: 18),
-      filled: true,
-      fillColor: DocColors.navy2,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: DocColors.gold.withValues(alpha: 0.4), width: 1.5),
-      ),
-    ),
-  );
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: controller,
+      builder: (context, value, _) {
+        return TextField(
+          controller: controller,
+          textCapitalization: TextCapitalization.sentences,
+          style: GoogleFonts.dmSans(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textPrimary,
+          ),
+          cursorColor: AppColors.primary,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: GoogleFonts.dmSans(
+              fontSize: 14,
+              color: AppColors.textTertiary,
+            ),
+
+            // 🔥 Prefix Icon
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(left: 12, right: 6),
+              child: Icon(
+                icon,
+                color: AppColors.textTertiary,
+                size: 18,
+              ),
+            ),
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 32,
+              minHeight: 32,
+            ),
+
+            // 🔥 Clear Button (only when text exists)
+            suffixIcon: value.text.isNotEmpty
+                ? IconButton(
+              icon: Icon(
+                Icons.close_rounded,
+                size: 18,
+                color: AppColors.textTertiary,
+              ),
+              onPressed: () {
+                controller.clear();
+              },
+            )
+                : null,
+
+            filled: true,
+            fillColor: AppColors.lightBackground2.withValues(alpha: 0.9),
+
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 14,
+            ),
+
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Colors.white.withValues(alpha: 0.05),
+              ),
+            ),
+
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: AppColors.primary.withValues(alpha: 0.5),
+                width: 1.2,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 // ── Document type grid ─────────────────────────────────────────────────────
@@ -577,12 +651,12 @@ class _DocumentTypeGrid extends StatelessWidget {
           duration: const Duration(milliseconds: 180),
           decoration: BoxDecoration(
             color: isSelected
-                ? DocColors.gold.withValues(alpha: 0.15)
-                : DocColors.navy2,
+                ? AppColors.primary.withValues(alpha: 0.15)
+                : AppColors.lightBackground2,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
-                  ? DocColors.gold.withValues(alpha: 0.5)
+                  ? AppColors.primary.withValues(alpha: 0.5)
                   : Colors.white.withValues(alpha: 0.06),
               width: isSelected ? 1.5 : 1,
             ),
@@ -600,7 +674,7 @@ class _DocumentTypeGrid extends StatelessWidget {
                 style: GoogleFonts.dmSans(
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
-                  color: isSelected ? DocColors.gold : DocColors.text2,
+                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
                 ),
               ),
             ],
@@ -624,11 +698,11 @@ class _FilePicker extends StatelessWidget {
     child: Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: DocColors.navy2,
+        color: AppColors.lightBackground2,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: fileName != null
-              ? DocColors.green.withValues(alpha: 0.3)
+              ? AppColors.success.withValues(alpha: 0.3)
               : Colors.white.withValues(alpha: 0.06),
         ),
       ),
@@ -638,15 +712,15 @@ class _FilePicker extends StatelessWidget {
             width: 38, height: 38,
             decoration: BoxDecoration(
               color: fileName != null
-                  ? DocColors.green.withValues(alpha: 0.12)
-                  : DocColors.gold.withValues(alpha: 0.12),
+                  ? AppColors.success.withValues(alpha: 0.12)
+                  : AppColors.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               fileName != null
                   ? Icons.check_circle_outline_rounded
                   : Icons.attach_file_rounded,
-              color: fileName != null ? DocColors.green : DocColors.gold,
+              color: fileName != null ? AppColors.success : AppColors.primary,
               size: 20,
             ),
           ),
@@ -662,25 +736,25 @@ class _FilePicker extends StatelessWidget {
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: fileName != null ? DocColors.text1 : DocColors.text3,
+                    color: fileName != null ? AppColors.textPrimary : AppColors.textTertiary,
                   ),
                 ),
                 if (fileName != null)
                   Text(
                     'Tap to change',
                     style: GoogleFonts.dmSans(
-                        fontSize: 11, color: DocColors.text3),
+                        fontSize: 11, color: AppColors.textTertiary),
                   )
                 else
                   Text(
                     'PDF, JPG, PNG, DOC supported',
                     style: GoogleFonts.dmSans(
-                        fontSize: 11, color: DocColors.text3),
+                        fontSize: 11, color: AppColors.textTertiary),
                   ),
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: DocColors.text3, size: 20),
+          Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary, size: 20),
         ],
       ),
     ),
@@ -709,7 +783,7 @@ class _TapRow extends StatelessWidget {
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
-        color: DocColors.navy2,
+        color: AppColors.lightBackground2,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
@@ -731,7 +805,7 @@ class _TapRow extends StatelessWidget {
                 Text(
                   label,
                   style: GoogleFonts.dmSans(
-                      fontSize: 11, color: DocColors.text3),
+                      fontSize: 11, color: AppColors.textTertiary),
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -739,13 +813,13 @@ class _TapRow extends StatelessWidget {
                   style: GoogleFonts.dmSans(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
-                    color: DocColors.text1,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: DocColors.text3, size: 20),
+          Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary, size: 20),
         ],
       ),
     ),
@@ -763,11 +837,11 @@ class _ReminderToggle extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     decoration: BoxDecoration(
-      color: DocColors.navy2,
+      color: AppColors.lightBackground2,
       borderRadius: BorderRadius.circular(14),
       border: Border.all(
         color: enabled
-            ? DocColors.green.withValues(alpha: 0.3)
+            ? AppColors.success.withValues(alpha: 0.3)
             : Colors.white.withValues(alpha: 0.06),
       ),
     ),
@@ -776,12 +850,12 @@ class _ReminderToggle extends StatelessWidget {
         Container(
           width: 38, height: 38,
           decoration: BoxDecoration(
-            color: DocColors.green.withValues(alpha: 0.12),
+            color: AppColors.success.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
             Icons.notifications_outlined,
-            color: DocColors.green,
+            color: AppColors.success,
             size: 18,
           ),
         ),
@@ -795,13 +869,13 @@ class _ReminderToggle extends StatelessWidget {
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: DocColors.text1,
+                  color: AppColors.textPrimary,
                 ),
               ),
               Text(
                 enabled ? 'Notifications are on' : 'Notifications are off',
                 style: GoogleFonts.dmSans(
-                    fontSize: 11, color: DocColors.text3),
+                    fontSize: 11, color: AppColors.textTertiary),
               ),
             ],
           ),
@@ -809,9 +883,9 @@ class _ReminderToggle extends StatelessWidget {
         Switch(
           value: enabled,
           onChanged: onChanged,
-          activeThumbColor: DocColors.green,
-          activeTrackColor: DocColors.green.withValues(alpha: 0.25),
-          inactiveThumbColor: DocColors.text3,
+          activeThumbColor: AppColors.success,
+          activeTrackColor: AppColors.success.withValues(alpha: 0.25),
+          inactiveThumbColor: AppColors.textTertiary,
           inactiveTrackColor: Colors.white.withValues(alpha: 0.08),
         ),
       ],
@@ -830,7 +904,7 @@ class _OffsetRow extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
     decoration: BoxDecoration(
-      color: DocColors.navy2,
+      color: AppColors.lightBackground2,
       borderRadius: BorderRadius.circular(14),
       border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
     ),
@@ -839,10 +913,10 @@ class _OffsetRow extends StatelessWidget {
         Container(
           width: 38, height: 38,
           decoration: BoxDecoration(
-            color: DocColors.amber.withValues(alpha: 0.12),
+            color: AppColors.warning.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(Icons.timer_outlined, color: DocColors.amber, size: 18),
+          child: Icon(Icons.timer_outlined, color: AppColors.warning, size: 18),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -886,13 +960,13 @@ class _SaveButton extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 17),
         decoration: BoxDecoration(
-          color: isLoading ? DocColors.gold.withValues(alpha: 0.5) : DocColors.gold,
+          color: isLoading ? AppColors.primary.withValues(alpha: 0.5) : AppColors.primary,
           borderRadius: BorderRadius.circular(100),
           boxShadow: isLoading
               ? []
               : [
             BoxShadow(
-              color: DocColors.gold.withValues(alpha: 0.35),
+              color: AppColors.primary.withValues(alpha: 0.35),
               blurRadius: 20, offset: const Offset(0, 8),
             ),
             BoxShadow(
@@ -908,7 +982,7 @@ class _SaveButton extends StatelessWidget {
             child: CircularProgressIndicator(
               strokeWidth: 2,
               valueColor:
-              AlwaysStoppedAnimation<Color>(DocColors.navy),
+              AlwaysStoppedAnimation<Color>(AppColors.lightBackground),
             ),
           )
               : Row(
@@ -918,7 +992,7 @@ class _SaveButton extends StatelessWidget {
                 isEdit
                     ? Icons.check_rounded
                     : Icons.add_rounded,
-                color: DocColors.navy,
+                color: AppColors.lightBackground,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -927,7 +1001,7 @@ class _SaveButton extends StatelessWidget {
                 style: GoogleFonts.dmSans(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: DocColors.navy,
+                  color: AppColors.lightBackground,
                 ),
               ),
             ],
@@ -956,7 +1030,7 @@ class _SourceBottomSheet extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 36),
         decoration: BoxDecoration(
-          color: DocColors.navy2.withValues(alpha: 0.95),
+          color: AppColors.lightBackground2.withValues(alpha: 0.95),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           border: Border(
             top: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
@@ -969,7 +1043,7 @@ class _SourceBottomSheet extends StatelessWidget {
             Container(
               width: 36, height: 4,
               decoration: BoxDecoration(
-                color: DocColors.text3,
+                color: AppColors.textTertiary,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -980,7 +1054,7 @@ class _SourceBottomSheet extends StatelessWidget {
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 2,
-                color: DocColors.gold,
+                color: AppColors.primary,
               ),
             ),
             const SizedBox(height: 24),
@@ -989,21 +1063,21 @@ class _SourceBottomSheet extends StatelessWidget {
                 _SourceTile(
                   emoji: '📷',
                   label: 'Camera',
-                  color: DocColors.green,
+                  color: AppColors.success,
                   onTap: onCamera,
                 ),
                 const SizedBox(width: 12),
                 _SourceTile(
                   emoji: '🖼',
                   label: 'Gallery',
-                  color: DocColors.amber,
+                  color: AppColors.warning,
                   onTap: onGallery,
                 ),
                 const SizedBox(width: 12),
                 _SourceTile(
                   emoji: '📁',
                   label: 'Files',
-                  color: DocColors.gold,
+                  color: AppColors.primary,
                   onTap: onFiles,
                 ),
               ],

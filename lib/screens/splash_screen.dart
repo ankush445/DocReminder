@@ -1,8 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'home_screen.dart'; // for DocColors
+import '../theme/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -76,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: DocColors.navy,
+      backgroundColor: AppColors.lightBackground,
       body: Stack(
         children: [
           // Radial glow — top right
@@ -87,7 +86,7 @@ class _SplashScreenState extends State<SplashScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(colors: [
-                  DocColors.gold.withValues(alpha: 0.14),
+                  AppColors.primary.withValues(alpha: 0.14),
                   Colors.transparent,
                 ]),
               ),
@@ -101,7 +100,7 @@ class _SplashScreenState extends State<SplashScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(colors: [
-                  DocColors.gold.withValues(alpha: 0.07),
+                  AppColors.primary.withValues(alpha: 0.07),
                   Colors.transparent,
                 ]),
               ),
@@ -122,15 +121,15 @@ class _SplashScreenState extends State<SplashScreen>
                       child: Container(
                         width: 110, height: 110,
                         decoration: BoxDecoration(
-                          color: DocColors.navy2,
+                          color: AppColors.lightBackground2,
                           borderRadius: BorderRadius.circular(28),
                           border: Border.all(
-                            color: DocColors.gold.withValues(alpha: 0.35),
+                            color: AppColors.primary.withValues(alpha: 0.35),
                             width: 1.5,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: DocColors.gold.withValues(alpha: 0.18),
+                              color: AppColors.primary.withValues(alpha: 0.18),
                               blurRadius: 36,
                               offset: const Offset(0, 12),
                             ),
@@ -147,17 +146,17 @@ class _SplashScreenState extends State<SplashScreen>
                             Icon(
                               Icons.description_outlined,
                               size: 52,
-                              color: DocColors.gold,
+                              color: AppColors.primary,
                             ),
                             Positioned(
                               bottom: 16, right: 16,
                               child: Container(
                                 width: 22, height: 22,
                                 decoration: BoxDecoration(
-                                  color: DocColors.green,
+                                  color: AppColors.success,
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: DocColors.navy2,
+                                    color: AppColors.lightBackground2,
                                     width: 2,
                                   ),
                                 ),
@@ -190,7 +189,7 @@ class _SplashScreenState extends State<SplashScreen>
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 2.4,
-                            color: DocColors.gold,
+                            color: AppColors.primary,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -198,7 +197,7 @@ class _SplashScreenState extends State<SplashScreen>
                           text: TextSpan(
                             style: GoogleFonts.dmSerifDisplay(
                               fontSize: 40,
-                              color: DocColors.text1,
+                              color: AppColors.textPrimary,
                               letterSpacing: -0.5,
                             ),
                             children: const [
@@ -207,7 +206,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 text: 'Reminder',
                                 style: TextStyle(
                                   fontStyle: FontStyle.italic,
-                                  color: DocColors.gold,
+                                  color: AppColors.primary,
                                 ),
                               ),
                             ],
@@ -217,7 +216,7 @@ class _SplashScreenState extends State<SplashScreen>
                         Container(
                           width: 40, height: 1.5,
                           decoration: BoxDecoration(
-                            color: DocColors.gold.withValues(alpha: 0.4),
+                            color: AppColors.primary.withValues(alpha: 0.4),
                             borderRadius: BorderRadius.circular(1),
                           ),
                         ),
@@ -227,7 +226,7 @@ class _SplashScreenState extends State<SplashScreen>
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w300,
-                            color: DocColors.text3,
+                            color: AppColors.textTertiary,
                             letterSpacing: 0.3,
                           ),
                         ),
@@ -281,7 +280,7 @@ class _LoadingDotsState extends State<_LoadingDots>
             width: 6, height: 6,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: DocColors.gold.withValues(alpha: opacity),
+              color: AppColors.primary.withValues(alpha: opacity),
             ),
           );
         }),

@@ -7,33 +7,9 @@ import '../models/document_status.dart';
 import '../providers/document_provider.dart';
 import '../widgets/document_card.dart';
 import '../widgets/empty_state.dart';
+import '../theme/app_colors.dart';
+import '../constants/app_constants.dart';
 import 'add_edit_screen.dart';
-
-// ── Palette ────────────────────────────────────────────────────────────────
-
-class DocColors {
-  // Light backgrounds
-  static const navy      = Color(0xFFF8F9FB);
-  static const navy2     = Color(0xFFFFFFFF);
-  static const navy3     = Color(0xFFF0F2F5);
-  
-  // Modern accent colors - light theme
-  static const gold      = Color(0xFF6366F1);
-  static const goldLight = Color(0xFF818CF8);
-  static const text1     = Color(0xFF1F2937);
-  static const text2     = Color(0xFF4B5563);
-  static const text3     = Color(0xFF9CA3AF);
-  
-  // Vibrant status colors for light theme
-  static const green     = Color(0xFF10B981);
-  static const amber     = Color(0xFFF59E0B);
-  static const red       = Color(0xFFEF4444);
-
-  static Color greenDim  = green.withValues(alpha:0.12);
-  static Color amberDim  = amber.withValues(alpha:0.12);
-  static Color redDim    = red.withValues(alpha:0.12);
-  static Color goldDim   = gold.withValues(alpha:0.15);
-}
 
 // ── Screen ─────────────────────────────────────────────────────────────────
 
@@ -56,7 +32,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.initState();
     _fabController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: AppConstants.animationNormal,
     );
     WidgetsBinding.instance.addPostFrameCallback((_) => _dismissKeyboard());
   }
@@ -113,37 +89,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     return GestureDetector(
       onTap: _dismissKeyboard,
       child: Scaffold(
-        backgroundColor: DocColors.navy,
+        backgroundColor: AppColors.lightBackground,
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
             // Radial glow behind header
-            Positioned(
-              top: -60, right: -40,
-              child: Container(
-                width: 220, height: 220,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(colors: [
-                    DocColors.gold.withValues(alpha:0.12),
-                    Colors.transparent,
-                  ]),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 0,
-              child: Container(
-                width: 220, height: 220,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(colors: [
-                    DocColors.gold.withValues(alpha:0.12),
-                    Colors.transparent,
-                  ]),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   top: -60, right: -40,
+            //   child: Container(
+            //     width: 220, height: 220,
+            //     decoration: BoxDecoration(
+            //       shape: BoxShape.circle,
+            //       gradient: RadialGradient(colors: [
+            //         AppColors.primary.withValues(alpha:0.12),
+            //         Colors.transparent,
+            //       ]),
+            //     ),
+            //   ),
+            // ),
+            // Positioned(
+            //   top: 0,
+            //   child: Container(
+            //     width: 220, height: 220,
+            //     decoration: BoxDecoration(
+            //       shape: BoxShape.circle,
+            //       gradient: RadialGradient(colors: [
+            //         AppColors.primary.withValues(alpha:0.12),
+            //         Colors.transparent,
+            //       ]),
+            //     ),
+            //   ),
+            // ),
             // Scrollable content (without header)
             Positioned(
               top: 0,
@@ -171,7 +147,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       validCount, warningCount, expiredCount,
                     ),
                   ),
-                  SliverToBoxAdapter(child: _Divider()),
+                  // SliverToBoxAdapter(child: _Divider()),
                   SliverToBoxAdapter(child: _buildSectionLabel(sectionLabel)),
                   displayed.isEmpty
                       ? SliverFillRemaining(
@@ -233,9 +209,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      DocColors.navy.withValues(alpha: 0.95),
-                      DocColors.navy.withValues(alpha: 0.7),
-                      DocColors.navy.withValues(alpha: 0.0),
+                      AppColors.lightBackground.withValues(alpha: 0.95),
+                      AppColors.lightBackground.withValues(alpha: 0.7),
+                      AppColors.lightBackground.withValues(alpha: 0.0),
                     ],
                     stops: const [0.0, 0.7, 1.0],
                   ),
@@ -273,15 +249,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 2.2,
-                    color: DocColors.gold,
+                    color: AppColors.primary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                // const SizedBox(height: 4),
                 RichText(
                   text: TextSpan(
                     style: GoogleFonts.dmSerifDisplay(
                       fontSize: 32,
-                      color: DocColors.text1,
+                      color: AppColors.textPrimary,
                       letterSpacing: -0.5,
                     ),
                     children: const [
@@ -290,7 +266,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         text: 'Reminder',
                         style: TextStyle(
                           fontStyle: FontStyle.italic,
-                          color: DocColors.gold,
+                          color: AppColors.primary,
                         ),
                       ),
                     ],
@@ -300,7 +276,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ),
           ),
           const SizedBox(width: 12),
-          _AvatarButton(initials: 'JD'),
+          _AvatarButton(initials: 'AM'),
         ],
       ),
     );
@@ -314,37 +290,81 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         focusNode: _searchFocusNode,
         onChanged: (v) {
           ref.read(searchQueryProvider.notifier).state = v;
-          setState(() {}); // refresh suffix icon
+          setState(() {});
         },
-        style: GoogleFonts.dmSans(fontSize: 14, color: DocColors.text1),
+        style: GoogleFonts.dmSans(
+          fontSize: 15,
+          fontWeight: FontWeight.w500, // 🔥 better readability
+          color: AppColors.textPrimary,
+        ),
         decoration: InputDecoration(
           hintText: 'Search documents…',
-          hintStyle: GoogleFonts.dmSans(fontSize: 14, color: DocColors.text3),
-          prefixIcon: Icon(Icons.search_rounded, color: DocColors.text3, size: 18),
+          hintStyle: GoogleFonts.dmSans(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: AppColors.textTertiary,
+          ),
+
+          // 🔥 FIXED PREFIX ICON SPACING
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(left: 12, right: 6),
+            child: Icon(
+              Icons.search_rounded,
+              color: AppColors.textTertiary,
+              size: 18,
+            ),
+          ),
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 30,
+            minHeight: 30,
+          ),
+
+          // 🔥 SUFFIX ICON IMPROVED
           suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-            icon: Icon(Icons.close_rounded, color: DocColors.text3, size: 16),
-            onPressed: () {
-              _searchController.clear();
-              ref.read(searchQueryProvider.notifier).state = '';
-              setState(() {});
-            },
+              ? Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              icon: Icon(
+                Icons.close_rounded,
+                color: AppColors.textTertiary,
+                size: 18,
+              ),
+              onPressed: () {
+                _searchController.clear();
+                ref.read(searchQueryProvider.notifier).state = '';
+                setState(() {});
+              },
+            ),
           )
               : null,
+
           filled: true,
-          fillColor: DocColors.navy2,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          fillColor: AppColors.lightSurface,
+
+          // 🔥 REDUCED HEIGHT
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 12,
+          ),
+
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: Colors.white.withValues(alpha:0.06)),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.white.withValues(alpha: 0.06),
+            ),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: Colors.white.withValues(alpha:0.06)),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.white.withValues(alpha: 0.06),
+            ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: DocColors.gold.withValues(alpha:0.4), width: 1.5),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: AppColors.primary.withValues(alpha: 0.4),
+              width: 1.2,
+            ),
           ),
         ),
       ),
@@ -360,28 +380,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           _FilterChip(
             label: 'All', count: all,
             isSelected: _selectedStatus == null,
-            activeColor: DocColors.gold,
+            activeColor: AppColors.primary,
             onTap: () => setState(() => _selectedStatus = null),
           ),
           const SizedBox(width: 8),
           _FilterChip(
             label: 'Valid', count: valid,
             isSelected: _selectedStatus == DocumentStatus.valid,
-            activeColor: DocColors.green,
+            activeColor: AppColors.success,
             onTap: () => setState(() => _selectedStatus = DocumentStatus.valid),
           ),
           const SizedBox(width: 8),
           _FilterChip(
             label: 'Expiring Soon', count: warning,
             isSelected: _selectedStatus == DocumentStatus.expiringSoon,
-            activeColor: DocColors.amber,
+            activeColor: AppColors.warning,
             onTap: () => setState(() => _selectedStatus = DocumentStatus.expiringSoon),
           ),
           const SizedBox(width: 8),
           _FilterChip(
             label: 'Expired', count: expired,
             isSelected: _selectedStatus == DocumentStatus.expired,
-            activeColor: DocColors.red,
+            activeColor: AppColors.error,
             onTap: () => setState(() => _selectedStatus = DocumentStatus.expired),
           ),
         ],
@@ -395,10 +415,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       child: Text(
         label.toUpperCase(),
         style: GoogleFonts.dmSans(
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
           letterSpacing: 1.6,
-          color: DocColors.text3,
+          color: AppColors.textTertiary,
         ),
       ),
     );
@@ -421,11 +441,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
           decoration: BoxDecoration(
-            color: DocColors.gold,
+            color: AppColors.primary,
             borderRadius: BorderRadius.circular(100),
             boxShadow: [
               BoxShadow(
-                color: DocColors.gold.withValues(alpha:0.4),
+                color: AppColors.primary.withValues(alpha:0.4),
                 blurRadius: 24, offset: const Offset(0, 8),
               ),
               BoxShadow(
@@ -437,14 +457,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.add_rounded, color: DocColors.navy, size: 20),
+              Icon(Icons.add_rounded, color: AppColors.lightBackground, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Add Document',
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: DocColors.navy,
+                  color: AppColors.lightBackground,
                 ),
               ),
             ],
@@ -478,14 +498,14 @@ class _AvatarButton extends StatelessWidget {
     width: 42, height: 42,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
-      color: DocColors.navy3,
-      border: Border.all(color: DocColors.gold.withValues(alpha:0.3), width: 1.5),
+      color: AppColors.lightSurfaceVariant,
+      border: Border.all(color: AppColors.primary.withValues(alpha:0.3), width: 1.5),
     ),
     child: Center(
       child: Text(
         initials,
         style: GoogleFonts.dmSans(
-          fontSize: 13, fontWeight: FontWeight.w600, color: DocColors.gold,
+          fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.primary,
         ),
       ),
     ),
@@ -501,18 +521,23 @@ class _StatsRow extends StatelessWidget {
     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
     child: Row(
       children: [
-        _StatCard(value: valid,   label: 'Valid',    color: DocColors.green),
+        _StatCard(value: valid,   label: 'Valid',    color: AppColors.success),
         const SizedBox(width: 10),
-        _StatCard(value: warning, label: 'Expiring', color: DocColors.amber),
+        _StatCard(value: warning, label: 'Expiring', color: AppColors.warning),
         const SizedBox(width: 10),
-        _StatCard(value: expired, label: 'Expired',  color: DocColors.red),
+        _StatCard(value: expired, label: 'Expired',  color: AppColors.error),
       ],
     ),
   );
 }
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({required this.value, required this.label, required this.color});
+  const _StatCard({
+    required this.value,
+    required this.label,
+    required this.color,
+  });
+
   final int value;
   final String label;
   final Color color;
@@ -522,9 +547,21 @@ class _StatCard extends StatelessWidget {
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: DocColors.navy2,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withValues(alpha:0.06)),
+        // 🔥 LIGHT GRADIENT
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withValues(alpha: 0.10), // light tint
+            color.withValues(alpha: 0.04), // very subtle
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+
+        // optional soft border
+        border: Border.all(
+          color: color.withValues(alpha: 0.15),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -532,15 +569,18 @@ class _StatCard extends StatelessWidget {
           Text(
             '$value',
             style: GoogleFonts.dmSans(
-              fontSize: 22, fontWeight: FontWeight.w600, color: color,
+              fontSize: 22,
+              fontWeight: FontWeight.w700, // 🔥 slightly bold
+              color: color,
             ),
           ),
-          const SizedBox(height: 2),
           Text(
             label,
             style: GoogleFonts.dmSans(
-              fontSize: 10, fontWeight: FontWeight.w500,
-              color: DocColors.text3, letterSpacing: 0.5,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textTertiary,
+              letterSpacing: 0.4,
             ),
           ),
         ],
@@ -570,7 +610,7 @@ class _FilterChip extends StatelessWidget {
       duration: const Duration(milliseconds: 180),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
       decoration: BoxDecoration(
-        color: isSelected ? activeColor.withValues(alpha:0.15) : DocColors.navy2,
+        color: isSelected ? activeColor.withValues(alpha:0.15) : AppColors.lightSurface,
         border: Border.all(
           color: isSelected ? activeColor.withValues(alpha:0.4) : Colors.white.withValues(alpha:0.08),
         ),
@@ -582,8 +622,8 @@ class _FilterChip extends StatelessWidget {
           Text(
             label,
             style: GoogleFonts.dmSans(
-              fontSize: 12, fontWeight: FontWeight.w500,
-              color: isSelected ? activeColor : DocColors.text2,
+              fontSize: 13, fontWeight: FontWeight.w600,
+              color: isSelected ? activeColor : AppColors.textSecondary,
             ),
           ),
           const SizedBox(width: 6),
@@ -591,16 +631,24 @@ class _FilterChip extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: isSelected
-                  ? activeColor.withValues(alpha:0.25)
-                  : Colors.white.withValues(alpha:0.08),
+                  ? activeColor.withValues(alpha: 0.25)
+                  : Colors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(100),
             ),
-            child: Text(
+            child: isSelected
+                ? Text(
               '$count',
               style: GoogleFonts.dmSans(
-                fontSize: 10, fontWeight: FontWeight.w600,
-                color: isSelected ? activeColor : DocColors.text3,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: activeColor,
               ),
+            )
+                : Icon(
+              Icons.arrow_forward_ios_rounded, // 🔥 clean arrow
+              size: 12,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textTertiary,
             ),
           ),
         ],
@@ -609,13 +657,13 @@ class _FilterChip extends StatelessWidget {
   );
 }
 
-class _Divider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-    child: Container(height: 1, color: Colors.white.withValues(alpha:0.04)),
-  );
-}
+// class _Divider extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) => Padding(
+//     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+//     child: Container(height: 1, color: Colors.black.withValues(alpha:0.04)),
+//   );
+// }
 
 class _AnimatedCard extends StatefulWidget {
   const _AnimatedCard({required this.index, required this.child});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/reminder_offset.dart';
-import '../screens/home_screen.dart'; // for DocColors
+import '../theme/app_colors.dart';
 
 class ReminderOffsetDropdown extends StatelessWidget {
   final ReminderOffset selectedOffset;
@@ -23,14 +23,14 @@ class ReminderOffsetDropdown extends StatelessWidget {
         isExpanded: true,
         icon: Icon(
           Icons.expand_more_rounded,
-          color: enabled ? DocColors.text2 : DocColors.text3,
+          color: enabled ? AppColors.textSecondary : AppColors.textTertiary,
           size: 20,
         ),
-        dropdownColor: DocColors.navy3,
+        dropdownColor: AppColors.lightBackground3,
         style: GoogleFonts.dmSans(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: enabled ? DocColors.text1 : DocColors.text3,
+          color: enabled ? AppColors.textPrimary : AppColors.textTertiary,
         ),
         onChanged: enabled ? (v) => onChanged(v!) : null,
         items: ReminderOffset.values.map((offset) {
@@ -48,12 +48,12 @@ class ReminderOffsetDropdown extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isSelected
-                          ? DocColors.amber
+                          ? AppColors.warning
                           : Colors.transparent,
                       border: Border.all(
                         color: isSelected
-                            ? DocColors.amber
-                            : DocColors.text3,
+                            ? AppColors.warning
+                            : AppColors.textTertiary,
                         width: 1.5,
                       ),
                     ),
@@ -66,8 +66,8 @@ class ReminderOffsetDropdown extends StatelessWidget {
                           ? FontWeight.w500
                           : FontWeight.w400,
                       color: isSelected
-                          ? DocColors.amber
-                          : DocColors.text2,
+                          ? AppColors.warning
+                          : AppColors.textSecondary,
                     ),
                   ),
                 ],

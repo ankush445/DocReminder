@@ -33,30 +33,32 @@ final filteredDocumentsProvider = Provider<List<DocumentModel>>((ref) {
 });
 
 final documentsByStatusProvider =
-    Provider<Map<DocumentStatus, List<DocumentModel>>>((ref) {
-      // Use filteredDocumentsProvider to apply search filter first
-      final documents = ref.watch(filteredDocumentsProvider);
+Provider<Map<DocumentStatus, List<DocumentModel>>>((ref) {
+  final documents = ref.watch(filteredDocumentsProvider);
 
-      final valid = <DocumentModel>[];
-      final expiringSoon = <DocumentModel>[];
-      final expired = <DocumentModel>[];
+  final valid = <DocumentModel>[];
+  final expiringSoon = <DocumentModel>[];
+  final expired = <DocumentModel>[];
 
-      for (final doc in documents) {
-        if (doc.isExpired) {
-          expired.add(doc);
-        } else if (doc.isExpiringsoon) {
-          expiringSoon.add(doc);
-        } else {
-          valid.add(doc);
-        }
-      }
+  for (final doc in documents) {
+    final days = doc.daysUntilExpiry;
 
-      return {
-        DocumentStatus.valid: valid,
-        DocumentStatus.expiringSoon: expiringSoon,
-        DocumentStatus.expired: expired,
-      };
-    });
+    if (days < 0) {
+      expired.add(doc);
+    } else if (days <= doc.reminderOffsetDays) {
+      // 🔥 includes TODAY (0) + expiringSoon
+      expiringSoon.add(doc);
+    } else {
+      valid.add(doc);
+    }
+  }
+
+  return {
+    DocumentStatus.valid: valid,
+    DocumentStatus.expiringSoon: expiringSoon,
+    DocumentStatus.expired: expired,
+  };
+});
 
 class DocumentNotifier extends StateNotifier<List<DocumentModel>> {
   final StorageService _storageService;

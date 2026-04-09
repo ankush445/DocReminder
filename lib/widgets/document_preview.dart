@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:open_file/open_file.dart';
-import '../screens/home_screen.dart'; // for DocColors
+import '../theme/app_colors.dart';
 
 class DocumentPreview extends StatefulWidget {
   final String filePath;
@@ -48,7 +48,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
 
   Color get _color {
     switch (_extension) {
-      case 'pdf':  return DocColors.red;
+      case 'pdf':  return AppColors.error;
       case 'jpg':
       case 'jpeg':
       case 'png':
@@ -57,10 +57,10 @@ class _DocumentPreviewState extends State<DocumentPreview> {
       case 'doc':
       case 'docx': return const Color(0xFF5B9BD5);  // word blue
       case 'xls':
-      case 'xlsx': return DocColors.green;
+      case 'xlsx': return AppColors.success;
       case 'ppt':
-      case 'pptx': return DocColors.amber;
-      default:     return DocColors.text3;
+      case 'pptx': return AppColors.warning;
+      default:     return AppColors.textTertiary;
     }
   }
 
@@ -73,7 +73,9 @@ class _DocumentPreviewState extends State<DocumentPreview> {
     }
     final now = DateTime.now();
     if (_lastTapTime != null &&
-        now.difference(_lastTapTime!).inMilliseconds < 500) return;
+        now.difference(_lastTapTime!).inMilliseconds < 500) {
+      return;
+    }
     _lastTapTime = now;
 
     HapticFeedback.selectionClick();
@@ -104,10 +106,10 @@ class _DocumentPreviewState extends State<DocumentPreview> {
 
   void _showSnackbar(String msg, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg, style: GoogleFonts.dmSans(color: DocColors.text1)),
+      content: Text(msg, style: GoogleFonts.dmSans(color: AppColors.textPrimary)),
       backgroundColor: isError
-          ? DocColors.red.withValues(alpha: 0.85)
-          : DocColors.green.withValues(alpha: 0.85),
+          ? AppColors.error.withValues(alpha: 0.85)
+          : AppColors.success.withValues(alpha: 0.85),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ));
@@ -122,7 +124,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: DocColors.navy2,
+          color: AppColors.lightBackground2,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: _color.withValues(alpha: 0.2),
@@ -153,7 +155,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: DocColors.text1,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -181,7 +183,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
                         'File Preview',
                         style: GoogleFonts.dmSans(
                           fontSize: 11,
-                          color: DocColors.text3,
+                          color: AppColors.textTertiary,
                         ),
                       ),
                     ],

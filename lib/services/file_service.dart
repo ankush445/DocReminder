@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
-import 'package:permission_handler/permission_handler.dart';
 
 class FileService {
   static final FileService _instance = FileService._internal();
@@ -15,54 +14,6 @@ class FileService {
   }
 
   FileService._internal();
-
-  Future<bool> _requestCameraPermission() async {
-    try {
-      PermissionStatus status = await Permission.camera.status;
-
-      if (kDebugMode) {
-        debugPrint('Camera permission current status: $status');
-      }
-
-      // If permanently denied, return false (user needs to go to settings)
-      if (status.isPermanentlyDenied) {
-        if (kDebugMode) {
-          debugPrint('Camera permission permanently denied');
-        }
-        return false;
-      }
-
-      // If denied, request permission
-      if (status.isDenied) {
-        status = await Permission.camera.request();
-        if (kDebugMode) {
-          debugPrint('Camera permission after request: $status');
-        }
-      }
-
-      return status.isGranted;
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('Error requesting camera permission: $e');
-      }
-      return false;
-    }
-  }
-
-  Future<bool> _handlePermissionDenied(String permissionType) async {
-    try {
-      if (kDebugMode) {
-        debugPrint('$permissionType permission denied, opening app settings');
-      }
-      await openAppSettings();
-      return false;
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('Error opening app settings: $e');
-      }
-      return false;
-    }
-  }
 
   Future<String?> pickFile() async {
     try {
@@ -99,7 +50,9 @@ class FileService {
 
       return null;
     } catch (e) {
-      print("Camera error: $e");
+      if (kDebugMode) {
+        debugPrint('Camera error: $e');
+      }
       return null;
     }
   }
@@ -180,24 +133,6 @@ class FileService {
         debugPrint('Error copying file: $e');
       }
       rethrow;
-    }
-  }
-
-  Future<bool> verifyFileExists(String filePath) async {
-    try {
-      final file = File(filePath);
-      final exists = await file.exists();
-
-      if (kDebugMode) {
-        debugPrint('File verification for $filePath: exists=$exists');
-      }
-
-      return exists;
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('Error verifying file: $e');
-      }
-      return false;
     }
   }
 

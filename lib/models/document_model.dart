@@ -81,10 +81,10 @@ class DocumentModel extends HiveObject {
   bool get isExpiringsoon {
     final today = _getTodayAtMidnight();
     final expiry = _getExpiryDateAtMidnight();
-    final sevenDaysFromNow = today.add(const Duration(days: 7));
 
-    // Expiring soon if expiry is after today and before/on 7 days from now
-    return expiry.isAfter(today) && expiry.isBefore(sevenDaysFromNow);
+    final days = expiry.difference(today).inDays;
+
+    return days > 0 && days <= reminderOffsetDays;
   }
 
   /// Get the number of days until expiry (0 = today, 1 = tomorrow, etc.)

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../screens/home_screen.dart'; // for DocColors
+import '../theme/app_colors.dart';
 
 class EmptyState extends StatefulWidget {
   final String title;
@@ -67,7 +67,7 @@ class _EmptyStateState extends State<EmptyState>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: DocColors.gold.withValues(alpha: 0.08),
+                          color: AppColors.primary.withValues(alpha: 0.08),
                           width: 1,
                         ),
                       ),
@@ -78,7 +78,7 @@ class _EmptyStateState extends State<EmptyState>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: DocColors.gold.withValues(alpha: 0.14),
+                          color: AppColors.primary.withValues(alpha: 0.14),
                           width: 1,
                         ),
                       ),
@@ -88,16 +88,16 @@ class _EmptyStateState extends State<EmptyState>
                       width: 64, height: 64,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: DocColors.navy2,
+                        color: AppColors.lightBackground2,
                         border: Border.all(
-                          color: DocColors.gold.withValues(alpha: 0.25),
+                          color: AppColors.primary.withValues(alpha: 0.25),
                           width: 1.5,
                         ),
                       ),
                       child: Icon(
                         widget.icon,
                         size: 28,
-                        color: DocColors.text3,
+                        color: AppColors.textTertiary,
                       ),
                     ),
                   ],
@@ -112,7 +112,7 @@ class _EmptyStateState extends State<EmptyState>
                   style: GoogleFonts.dmSerifDisplay(
                     fontSize: 22,
                     fontStyle: FontStyle.italic,
-                    color: DocColors.text2,
+                    color: AppColors.textSecondary,
                     letterSpacing: -0.3,
                   ),
                 ),
@@ -123,7 +123,7 @@ class _EmptyStateState extends State<EmptyState>
                 Container(
                   width: 32, height: 1,
                   decoration: BoxDecoration(
-                    color: DocColors.gold.withValues(alpha: 0.3),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(1),
                   ),
                 ),
@@ -137,7 +137,7 @@ class _EmptyStateState extends State<EmptyState>
                   style: GoogleFonts.dmSans(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: DocColors.text3,
+                    color: AppColors.textTertiary,
                     height: 1.6,
                   ),
                 ),

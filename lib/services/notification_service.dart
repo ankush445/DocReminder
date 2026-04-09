@@ -4,11 +4,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/timezone.dart' as tz;
 import '../models/document_model.dart';
+import '../constants/app_constants.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
-  static const String _notificationChannelId = 'document_reminder_channel';
 
   factory NotificationService() {
     return _instance;
@@ -59,9 +59,9 @@ class NotificationService {
     try {
       if (Platform.isAndroid) {
         const AndroidNotificationChannel channel = AndroidNotificationChannel(
-          _notificationChannelId,
-          'Document Reminders',
-          description: 'Notifications for document expiry reminders',
+          AppConstants.notificationChannelId,
+          AppConstants.notificationChannelName,
+          description: AppConstants.notificationChannelDescription,
           importance: Importance.high,
           enableVibration: true,
           playSound: true,
@@ -188,9 +188,9 @@ class NotificationService {
         tzDateTime,
         NotificationDetails(
           android: AndroidNotificationDetails(
-            _notificationChannelId,
-            'Document Reminders',
-            channelDescription: 'Notifications for document expiry reminders',
+            AppConstants.notificationChannelId,
+            AppConstants.notificationChannelName,
+            channelDescription: AppConstants.notificationChannelDescription,
             importance: Importance.high,
             priority: Priority.high,
             enableVibration: true,
