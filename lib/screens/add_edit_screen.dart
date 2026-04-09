@@ -277,7 +277,7 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
 
   void _showSuccessSnackbar(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg, style: GoogleFonts.dmSans(color: DocColors.text1)),
+      content: Text(msg, style: GoogleFonts.dmSans(color: DocColors.navy)),
       backgroundColor: DocColors.green.withValues(alpha: 0.85),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

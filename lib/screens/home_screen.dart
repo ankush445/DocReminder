@@ -12,17 +12,22 @@ import 'add_edit_screen.dart';
 // ── Palette ────────────────────────────────────────────────────────────────
 
 class DocColors {
-  static const navy      = Color(0xFF0D1B2A);
-  static const navy2     = Color(0xFF162336);
-  static const navy3     = Color(0xFF1E2F45);
-  static const gold      = Color(0xFFC9A84C);
-  static const goldLight = Color(0xFFE8CC7E);
-  static const text1     = Color(0xFFF0EAD9);
-  static const text2     = Color(0xFFA8A090);
-  static const text3     = Color(0xFF6A6158);
-  static const green     = Color(0xFF4CAF87);
-  static const amber     = Color(0xFFE8A44A);
-  static const red       = Color(0xFFE06060);
+  // Light backgrounds
+  static const navy      = Color(0xFFF8F9FB);
+  static const navy2     = Color(0xFFFFFFFF);
+  static const navy3     = Color(0xFFF0F2F5);
+  
+  // Modern accent colors - light theme
+  static const gold      = Color(0xFF6366F1);
+  static const goldLight = Color(0xFF818CF8);
+  static const text1     = Color(0xFF1F2937);
+  static const text2     = Color(0xFF4B5563);
+  static const text3     = Color(0xFF9CA3AF);
+  
+  // Vibrant status colors for light theme
+  static const green     = Color(0xFF10B981);
+  static const amber     = Color(0xFFF59E0B);
+  static const red       = Color(0xFFEF4444);
 
   static Color greenDim  = green.withValues(alpha:0.12);
   static Color amberDim  = amber.withValues(alpha:0.12);
@@ -66,6 +71,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   void _dismissKeyboard() {
     if (mounted) FocusScope.of(context).unfocus();
+  }
+
+  double _getHeaderHeight() {
+    // Calculate header height: padding (64 + 20) + title height (~60) + spacing
+    return 144;
   }
 
   @override
@@ -134,70 +144,104 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
               ),
             ),
-            CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(child: _buildHeader()),
-                SliverToBoxAdapter(child: _buildSearchBar()),
-                SliverToBoxAdapter(
-                  child: _StatsRow(
-                    valid: validCount,
-                    warning: warningCount,
-                    expired: expiredCount,
+            // Scrollable content (without header)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child:  CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  // Add padding at top to account for fixed header
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: _getHeaderHeight()),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: _buildFilterChips(
-                    filteredDocuments.length,
-                    validCount, warningCount, expiredCount,
+                  SliverToBoxAdapter(child: _buildSearchBar()),
+                  SliverToBoxAdapter(
+                    child: _StatsRow(
+                      valid: validCount,
+                      warning: warningCount,
+                      expired: expiredCount,
+                    ),
                   ),
-                ),
-                SliverToBoxAdapter(child: _Divider()),
-                SliverToBoxAdapter(child: _buildSectionLabel(sectionLabel)),
-                displayed.isEmpty
-                    ? SliverFillRemaining(
-                  child: EmptyState(
-                    title: 'No $sectionLabel',
-                    message: 'Add your first document to get started',
-                    icon: Icons.document_scanner_outlined,
+                  SliverToBoxAdapter(
+                    child: _buildFilterChips(
+                      filteredDocuments.length,
+                      validCount, warningCount, expiredCount,
+                    ),
                   ),
-                )
-                    : SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                      final doc = displayed[index];
-                      return Padding(
-                        padding: EdgeInsets.fromLTRB(
-                          20, index == 0 ? 0 : 6, 20, 6,
-                        ),
-                        child: _AnimatedCard(
-                          index: index,
-                          child: DocumentCard(
-                            document: doc,
-                            onEdit: () {
-                              _dismissKeyboard();
-                              Navigator.push(
-                                context,
-                                _slideRoute(AddEditScreen(document: doc)),
-                              );
-                            },
-                            onDelete: () {
-                              HapticFeedback.lightImpact();
-                              ref
-                                  .read(documentsProvider.notifier)
-                                  .deleteDocument(doc.id);
-                            },
+                  SliverToBoxAdapter(child: _Divider()),
+                  SliverToBoxAdapter(child: _buildSectionLabel(sectionLabel)),
+                  displayed.isEmpty
+                      ? SliverFillRemaining(
+                    hasScrollBody: false, // ✅ IMPORTANT
+                    child: Center(
+                      child: EmptyState(
+                        title: 'No $sectionLabel',
+                        message: 'Add your first document to get started',
+                        icon: Icons.document_scanner_outlined,
+                      ),
+                    ),
+                  )
+                      : SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                        final doc = displayed[index];
+                        return Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            20, index == 0 ? 0 : 6, 20, 6,
                           ),
-                        ),
-                      );
-                    },
-                    childCount: displayed.length,
+                          child: _AnimatedCard(
+                            index: index,
+                            child: DocumentCard(
+                              document: doc,
+                              onEdit: () {
+                                _dismissKeyboard();
+                                Navigator.push(
+                                  context,
+                                  _slideRoute(AddEditScreen(document: doc)),
+                                );
+                              },
+                              onDelete: () {
+                                HapticFeedback.lightImpact();
+                                ref
+                                    .read(documentsProvider.notifier)
+                                    .deleteDocument(doc.id);
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      childCount: displayed.length,
+                    ),
+                  ),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 110),
+                  ),
+                ],
+              )
+            ),
+            // Fixed header at top with transparency effect
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      DocColors.navy.withValues(alpha: 0.95),
+                      DocColors.navy.withValues(alpha: 0.7),
+                      DocColors.navy.withValues(alpha: 0.0),
+                    ],
+                    stops: const [0.0, 0.7, 1.0],
                   ),
                 ),
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 110),
-                ),
-              ],
+                child: _buildHeader(),
+              ),
             ),
 
             // Gold FAB
