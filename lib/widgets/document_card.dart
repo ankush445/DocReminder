@@ -212,15 +212,17 @@ class _CardBody extends StatelessWidget {
                   children: [
                     // Icon
                     Container(
-                      width: 40, height: 40,
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
                         color: statusDim,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Icon(
-                        _iconForDoc(document.documentName),
-                        color: statusColor,
-                        size: 30,
+                      child: Center(
+                        child: Text(
+                          _iconForDoc(document.documentType),
+                          style: const TextStyle(fontSize: 24),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -270,7 +272,7 @@ class _CardBody extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
 
                 // // Progress bar
                 // ClipRRect(
@@ -323,18 +325,35 @@ class _CardBody extends StatelessWidget {
     );
   }
 
-  IconData _iconForDoc(String name) {
-    final lower = name.toLowerCase();
-    if (lower.contains('passport'))                                   return Icons.flight_outlined;
-    if (lower.contains('licence') || lower.contains('license') ||
-        lower.contains('driving')) {
-      return Icons.directions_car_outlined;
+  String _iconForDoc(String name) {
+    switch (name.toLowerCase()) {
+      case "identity":
+        return'🪪';
+
+      case "travel":
+        return '🛂';
+
+      case "vehicle":
+        return '🚗';
+
+      case "medical":
+        return '🏥';
+
+      case "financial":
+        return '🏦';
+
+      case "property":
+        return '🏠';
+
+      case "education":
+        return '🎓';
+
+      case "other":
+        return '📋';
+
+      default:
+        return '📋'; // fallback
     }
-    if (lower.contains('health') || lower.contains('medical'))       return Icons.health_and_safety_outlined;
-    if (lower.contains('insurance'))                                  return Icons.shield_outlined;
-    if (lower.contains('visa'))                                       return Icons.card_travel_outlined;
-    if (lower.contains('id') || lower.contains('identity'))          return Icons.badge_outlined;
-    return Icons.description_outlined;
   }
 }
 

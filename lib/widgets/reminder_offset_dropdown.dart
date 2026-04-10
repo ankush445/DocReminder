@@ -24,11 +24,11 @@ class ReminderOffsetDropdown extends StatelessWidget {
         icon: Icon(
           Icons.expand_more_rounded,
           color: enabled ? AppColors.textSecondary : AppColors.textTertiary,
-          size: 20,
+          size: 24,
         ),
-        dropdownColor: AppColors.lightBackground3,
+        dropdownColor: AppColors.lightBackground2,
         style: GoogleFonts.dmSans(
-          fontSize: 14,
+          fontSize: 15,
           fontWeight: FontWeight.w500,
           color: enabled ? AppColors.textPrimary : AppColors.textTertiary,
         ),

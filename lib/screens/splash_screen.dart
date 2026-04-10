@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen>
       });
     });
 
-    Future.delayed(const Duration(milliseconds: 2600), () {
+    Future.delayed(const Duration(milliseconds: 3000), () {
       if (mounted) Navigator.of(context).pushReplacementNamed('/home');
     });
   }
@@ -145,7 +145,7 @@ class _SplashScreenState extends State<SplashScreen>
                           children: [
                             Icon(
                               Icons.description_outlined,
-                              size: 52,
+                              size: 60,
                               color: AppColors.primary,
                             ),
                             Positioned(
@@ -163,7 +163,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 child: const Icon(
                                   Icons.check_rounded,
                                   color: Colors.white,
-                                  size: 13,
+                                  size: 15,
                                 ),
                               ),
                             ),
@@ -186,7 +186,7 @@ class _SplashScreenState extends State<SplashScreen>
                         Text(
                           'DOCUMENT VAULT',
                           style: GoogleFonts.dmSans(
-                            fontSize: 10,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 2.4,
                             color: AppColors.primary,
@@ -225,7 +225,7 @@ class _SplashScreenState extends State<SplashScreen>
                           'Never miss a document deadline',
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
-                            fontWeight: FontWeight.w300,
+                            fontWeight: FontWeight.w400,
                             color: AppColors.textTertiary,
                             letterSpacing: 0.3,
                           ),

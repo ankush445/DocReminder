@@ -106,7 +106,7 @@ class _DocumentPreviewState extends State<DocumentPreview> {
 
   void _showSnackbar(String msg, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg, style: GoogleFonts.dmSans(color: AppColors.textPrimary)),
+      content: Text(msg, style: GoogleFonts.dmSans(color: AppColors.lightBackground)),
       backgroundColor: isError
           ? AppColors.error.withValues(alpha: 0.85)
           : AppColors.success.withValues(alpha: 0.85),

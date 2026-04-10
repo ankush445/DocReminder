@@ -89,37 +89,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     return GestureDetector(
       onTap: _dismissKeyboard,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
+
         backgroundColor: AppColors.lightBackground,
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
             // Radial glow behind header
-            // Positioned(
-            //   top: -60, right: -40,
-            //   child: Container(
-            //     width: 220, height: 220,
-            //     decoration: BoxDecoration(
-            //       shape: BoxShape.circle,
-            //       gradient: RadialGradient(colors: [
-            //         AppColors.primary.withValues(alpha:0.12),
-            //         Colors.transparent,
-            //       ]),
-            //     ),
-            //   ),
-            // ),
-            // Positioned(
-            //   top: 0,
-            //   child: Container(
-            //     width: 220, height: 220,
-            //     decoration: BoxDecoration(
-            //       shape: BoxShape.circle,
-            //       gradient: RadialGradient(colors: [
-            //         AppColors.primary.withValues(alpha:0.12),
-            //         Colors.transparent,
-            //       ]),
-            //     ),
-            //   ),
-            // ),
+            Positioned(
+              top: -60, right: -40,
+              child: Container(
+                width: 220, height: 220,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(colors: [
+                    AppColors.primary.withValues(alpha:0.12),
+                    Colors.transparent,
+                  ]),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              child: Container(
+                width: 220, height: 220,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(colors: [
+                    AppColors.primary.withValues(alpha:0.12),
+                    Colors.transparent,
+                  ]),
+                ),
+              ),
+            ),
             // Scrollable content (without header)
             Positioned(
               top: 0,

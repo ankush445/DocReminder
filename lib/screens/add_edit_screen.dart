@@ -42,14 +42,14 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
 
   // ── Document types ─────────────────────────────────────────────────────
   static const _documentTypes = [
-    ('🪪', 'Identity',    'ID Card, Aadhar, PAN'),
-    ('🛂', 'Travel',      'Passport, Visa'),
-    ('🚗', 'Vehicle',     'Licence, RC, Insurance'),
-    ('🏥', 'Medical',     'Health card, Reports'),
-    ('🏦', 'Financial',   'Bank, Tax, Statements'),
-    ('🏠', 'Property',    'Lease, Deed, NOC'),
-    ('🎓', 'Education',   'Degree, Certificates'),
-    ('📋', 'Other',       'Miscellaneous'),
+    ('🪪', 'Identity'),
+    ('🛂', 'Travel'),
+    ('🚗', 'Vehicle'),
+    ('🏥', 'Medical'),
+    ('🏦', 'Financial'),
+    ('🏠', 'Property'),
+    ('🎓', 'Education'),
+    ('📋', 'Other'),
   ];
 
   @override
@@ -194,8 +194,8 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
     colorScheme: const ColorScheme.dark(
       primary: AppColors.primary,
       onPrimary: AppColors.textInverse,
-      surface: AppColors.darkSurface,
-      onSurface: AppColors.textInverse,
+      surface: AppColors.lightBackground2,
+      onSurface: AppColors.textSecondary,
     ),
     dialogTheme: DialogThemeData(
       backgroundColor: AppColors.darkSurface,
@@ -305,21 +305,6 @@ class _AddEditScreenState extends ConsumerState<AddEditScreen>
           backgroundColor: AppColors.lightBackground,
           body: Stack(
             children: [
-              // Radial glow (top-right, matches home screen)
-              // Positioned(
-              //   top: -60, right: -40,
-              //   child: Container(
-              //     width: 200, height: 200,
-              //     decoration: BoxDecoration(
-              //       shape: BoxShape.circle,
-              //       gradient: RadialGradient(colors: [
-              //         AppColors.primary.withValues(alpha: 0.10),
-              //         Colors.transparent,
-              //       ]),
-              //     ),
-              //   ),
-              // ),
-
               Column(
                 children: [
                   // ── Pinned header ────────────────────────────────────
@@ -623,7 +608,7 @@ class _DocumentTypeGrid extends StatelessWidget {
     required this.selected,
     required this.onSelect,
   });
-  final List<(String, String, String)> types;
+  final List<(String, String)> types;
   final String? selected;
   final ValueChanged<String> onSelect;
 
@@ -640,7 +625,7 @@ class _DocumentTypeGrid extends StatelessWidget {
     ),
     itemCount: types.length,
     itemBuilder: (context, i) {
-      final (emoji, name, _) = types[i];
+      final (emoji, name) = types[i];
       final isSelected = selected == name;
       return GestureDetector(
         onTap: () {
@@ -664,7 +649,7 @@ class _DocumentTypeGrid extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 22)),
+              Text(emoji, style: const TextStyle(fontSize: 30)),
               const SizedBox(height: 6),
               Text(
                 name,
@@ -672,7 +657,7 @@ class _DocumentTypeGrid extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.dmSans(
-                  fontSize: 11,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: isSelected ? AppColors.primary : AppColors.textSecondary,
                 ),
@@ -721,7 +706,7 @@ class _FilePicker extends StatelessWidget {
                   ? Icons.check_circle_outline_rounded
                   : Icons.attach_file_rounded,
               color: fileName != null ? AppColors.success : AppColors.primary,
-              size: 20,
+              size: 24,
             ),
           ),
           const SizedBox(width: 12),
@@ -735,7 +720,7 @@ class _FilePicker extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     color: fileName != null ? AppColors.textPrimary : AppColors.textTertiary,
                   ),
                 ),
@@ -743,18 +728,18 @@ class _FilePicker extends StatelessWidget {
                   Text(
                     'Tap to change',
                     style: GoogleFonts.dmSans(
-                        fontSize: 11, color: AppColors.textTertiary),
+                        fontSize: 12, color: AppColors.textTertiary),
                   )
                 else
                   Text(
                     'PDF, JPG, PNG, DOC supported',
                     style: GoogleFonts.dmSans(
-                        fontSize: 11, color: AppColors.textTertiary),
+                        fontSize: 12, color: AppColors.textTertiary),
                   ),
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary, size: 20),
+          Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary, size: 24),
         ],
       ),
     ),
@@ -795,7 +780,7 @@ class _TapRow extends StatelessWidget {
               color: iconColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: iconColor, size: 18),
+            child: Icon(icon, color: iconColor, size: 24),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -805,7 +790,7 @@ class _TapRow extends StatelessWidget {
                 Text(
                   label,
                   style: GoogleFonts.dmSans(
-                      fontSize: 11, color: AppColors.textTertiary),
+                      fontSize: 12, color: AppColors.textTertiary),
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -819,7 +804,7 @@ class _TapRow extends StatelessWidget {
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary, size: 20),
+          Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary, size: 24),
         ],
       ),
     ),
@@ -856,7 +841,7 @@ class _ReminderToggle extends StatelessWidget {
           child: Icon(
             Icons.notifications_outlined,
             color: AppColors.success,
-            size: 18,
+            size: 24,
           ),
         ),
         const SizedBox(width: 12),
@@ -867,7 +852,7 @@ class _ReminderToggle extends StatelessWidget {
               Text(
                 'Enable Reminders',
                 style: GoogleFonts.dmSans(
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textPrimary,
                 ),
@@ -875,7 +860,7 @@ class _ReminderToggle extends StatelessWidget {
               Text(
                 enabled ? 'Notifications are on' : 'Notifications are off',
                 style: GoogleFonts.dmSans(
-                    fontSize: 11, color: AppColors.textTertiary),
+                    fontSize: 12, color: AppColors.textTertiary),
               ),
             ],
           ),
@@ -916,7 +901,7 @@ class _OffsetRow extends StatelessWidget {
             color: AppColors.warning.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(Icons.timer_outlined, color: AppColors.warning, size: 18),
+          child: Icon(Icons.timer_outlined, color: AppColors.warning, size: 24),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -1051,7 +1036,7 @@ class _SourceBottomSheet extends StatelessWidget {
             Text(
               'ATTACH DOCUMENT',
               style: GoogleFonts.dmSans(
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 2,
                 color: AppColors.primary,
@@ -1117,13 +1102,13 @@ class _SourceTile extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 26)),
-            const SizedBox(height: 8),
+            Text(emoji, style: const TextStyle(fontSize: 30)),
+            const SizedBox(height: 4),
             Text(
               label,
               style: GoogleFonts.dmSans(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
                 color: color,
               ),
             ),
